@@ -1,0 +1,11 @@
+Esse é um sistema para efetuar leitura em um arquivo CSV e apresentá-lo em uma página Web.
+
+A plataforma é Java e utiliza Spring Boot para o backend e Angular JS como frontend.
+
+Para utilizá-lo é necessário ter o Java 8 e Maven 3.
+
+Basta fazer o clone do projeto e no diretório do projeto digitar: mvn spring-boot:run
+
+Espera a linha no prompt avisar que o servidor web iniciou, entre no brower e digite o seguinte endereço: http://localhost:8080/home
+
+ 
