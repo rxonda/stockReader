@@ -1,0 +1,14 @@
+<table class="table table-striped">
+    <tr>
+        <th>Ação</th>
+        <th>Data</th>
+        <th>Fechamento</th>
+        <th>Volume</th>
+    </tr>
+    <tr ng-repeat="movimento in movimentacao">
+        <td>{{movimento.id}}</td>
+        <td>{{movimento.date | date : 'dd/MM/yyyy' }}</td>
+        <td>{{movimento.close}}</td>
+        <td>{{movimento.volume}}</td>
+    </tr>
+</table>

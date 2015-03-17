@@ -12,10 +12,11 @@
     <link rel="stylesheet" href="./style/style.css"/>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.28/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.28/angular-route.min.js"></script>
     <script type="application/javascript" src="./js/app.js"/>
 </head>
 
-<body ng-controller="stockReaderController">
+<body>
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -30,16 +31,16 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#" ng-click="showAll()">Home</a></li>
+                <li class="active"><a href="#">Home</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Testes <span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Testes <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" ng-click="fechamentoMaximo()">Fechamento máximo</a></li>
-                        <li><a href="#" ng-click="fechamentoMinimo()">Fechamento mínimo</a></li>
-                        <li><a href="#" ng-click="retornoMaximo()">Retorno máximo</a></li>
-                        <li><a href="#" ng-click="retornoMinimo()">Retorno mínimo</a></li>
+                        <li><a href="#/fechamentoMaximo">Fechamento máximo</a></li>
+                        <li><a href="#/fechamentoMinimo">Fechamento mínimo</a></li>
+                        <li><a href="#/retornoMaximo">Retorno máximo</a></li>
+                        <li><a href="#/retornoMinimo">Retorno mínimo</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" ng-click="volumeMedio()">Volume médio por Ação</a></li>
+                        <li><a href="#/volumeMedio">Volume médio por Ação</a></li>
                     </ul>
                 </li>
             </ul>
@@ -47,34 +48,7 @@
     </div>
 </nav>
 
-<div class="container">
-
-    <table class="table table-striped" ng-show="mostraMovimento">
-        <tr>
-            <th>Ação</th>
-            <th>Data</th>
-            <th>Fechamento</th>
-            <th>Volume</th>
-        </tr>
-        <tr ng-repeat="movimento in movimentacao">
-            <td>{{movimento.id}}</td>
-            <td>{{movimento.date | date : 'dd/MM/yyyy' }}</td>
-            <td>{{movimento.close}}</td>
-            <td>{{movimento.volume}}</td>
-        </tr>
-    </table>
-    <table class="table table-striped" ng-show="mostraVolume">
-        <tr>
-            <th>Ação</th>
-            <th>Volume</th>
-        </tr>
-        <tr ng-repeat="volume in volumes">
-            <td>{{volume.id}}</td>
-            <td>{{volume.volume}}</td>
-        </tr>
-    </table>
-
-</div><!-- /.container -->
+<div class="container" ng-view=""></div>
 
 
 <!-- Bootstrap core JavaScript
