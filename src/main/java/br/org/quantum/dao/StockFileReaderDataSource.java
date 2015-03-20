@@ -5,12 +5,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,10 +27,11 @@ public class StockFileReaderDataSource implements StockDataSource {
         try {
             DateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
 
-            URI uri = resource.getURI();
+            InputStream in = resource.getInputStream();
+            BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 
-            return Files.lines(Paths.get(uri))
-                    .filter(s -> !s.startsWith("Acao"))
+            return bin.lines()
+                    .skip(1L)
                     .map(s -> {
                         StringTokenizer tokenizer = new StringTokenizer(s, ",");
                         String id = tokenizer.nextToken();
