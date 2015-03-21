@@ -35,37 +35,37 @@ stockReaderApp.config(function($routeProvider){
 });
 
 stockReaderApp.controller('stockReaderController',['$scope', '$http', function(scope, http){
-    http.get('/all').success(function(data){
+    http.get('/stocks').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('fechamentoMaximoController',['$scope', '$http', function(scope, http) {
-    http.get('/fechamentoMaximo').success(function(data){
+    http.get('/stocks/fechamentoMaximo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('fechamentoMinimoController',['$scope', '$http', function(scope, http) {
-    http.get('/fechamentoMinimo').success(function(data){
+    http.get('/stocks/fechamentoMinimo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('retornoMaximoController',['$scope', '$http', function(scope, http) {
-    http.get('/retornoMaximo').success(function(data){
+    http.get('/stocks/retornoMaximo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('retornoMinimoController',['$scope', '$http', function(scope, http) {
-    http.get('/retornoMinimo').success(function(data){
+    http.get('/stocks/retornoMinimo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('volumeMedioController',['$scope', '$http', function(scope, http) {
-    http.get('/volumeMedio').success(function(data){
+    http.get('/stocks/volumeMedio').success(function(data){
         scope.volumes = data;
     });
 }]);
