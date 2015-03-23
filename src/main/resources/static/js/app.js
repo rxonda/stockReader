@@ -35,37 +35,37 @@ stockReaderApp.config(function($routeProvider){
 });
 
 stockReaderApp.controller('stockReaderController',['$scope', '$http', function(scope, http){
-    http.get('/stocks').success(function(data){
+    http.get('/nonblocking').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('fechamentoMaximoController',['$scope', '$http', function(scope, http) {
-    http.get('/stocks/fechamentoMaximo').success(function(data){
+    http.get('/nonblocking/fechamentoMaximo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('fechamentoMinimoController',['$scope', '$http', function(scope, http) {
-    http.get('/stocks/fechamentoMinimo').success(function(data){
+    http.get('/nonblocking/fechamentoMinimo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('retornoMaximoController',['$scope', '$http', function(scope, http) {
-    http.get('/stocks/retornoMaximo').success(function(data){
+    http.get('/nonblocking/retornoMaximo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('retornoMinimoController',['$scope', '$http', function(scope, http) {
-    http.get('/stocks/retornoMinimo').success(function(data){
+    http.get('/nonblocking/retornoMinimo').success(function(data){
         scope.movimentacao = data;
     });
 }]);
 
 stockReaderApp.controller('volumeMedioController',['$scope', '$http', function(scope, http) {
-    http.get('/stocks/volumeMedio').success(function(data){
+    http.get('/nonblocking/volumeMedio').success(function(data){
         scope.volumes = data;
     });
 }]);
