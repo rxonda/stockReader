@@ -1,5 +1,6 @@
 package br.org.quantum.rest;
 
+import br.org.quantum.dao.StockNonBlockingDatasource;
 import br.org.quantum.domain.Movimento;
 import br.org.quantum.domain.VolumeMedio;
 import br.org.quantum.services.StockReaderService;
@@ -8,8 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -22,12 +27,36 @@ public class StockNonBlockingRestController {
     private StockReaderService stockReaderService;
 
     @Autowired
-    ExecutorService executorService;
+    private ExecutorService executorService;
+
+    @Autowired
+    private StockNonBlockingDatasource stockNonBlockingDatasource;
 
     @RequestMapping(method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> list() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.list()));
+
+        stockNonBlockingDatasource.list()
+                .subscribeOn(Schedulers.from(executorService))
+                .subscribe(new Subscriber<Movimento>() {
+                    List<Movimento> resultado = new ArrayList<Movimento>(100);
+
+                    @Override
+                    public void onCompleted() {
+                        deferredResult.setResult(resultado);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+
+                    }
+
+                    @Override
+                    public void onNext(Movimento movimento) {
+                        resultado.add(movimento);
+                    }
+                });
+
         return deferredResult;
     }
 
