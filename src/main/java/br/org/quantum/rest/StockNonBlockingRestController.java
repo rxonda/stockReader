@@ -3,6 +3,7 @@ package br.org.quantum.rest;
 import br.org.quantum.dao.StockNonBlockingDatasource;
 import br.org.quantum.domain.Movimento;
 import br.org.quantum.domain.VolumeMedio;
+import br.org.quantum.services.StockNonBlockingReader;
 import br.org.quantum.services.StockReaderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
@@ -24,38 +27,18 @@ import java.util.concurrent.ExecutorService;
 @RequestMapping("/nonblocking")
 public class StockNonBlockingRestController {
     @Autowired
-    private StockReaderService stockReaderService;
+    private StockNonBlockingReader stockReaderService;
 
     @Autowired
     private ExecutorService executorService;
-
-    @Autowired
-    private StockNonBlockingDatasource stockNonBlockingDatasource;
 
     @RequestMapping(method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> list() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
 
-        stockNonBlockingDatasource.list()
+        stockReaderService.list()
                 .subscribeOn(Schedulers.from(executorService))
-                .subscribe(new Subscriber<Movimento>() {
-                    List<Movimento> resultado = new ArrayList<Movimento>(100);
-
-                    @Override
-                    public void onCompleted() {
-                        deferredResult.setResult(resultado);
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-
-                    }
-
-                    @Override
-                    public void onNext(Movimento movimento) {
-                        resultado.add(movimento);
-                    }
-                });
+                .doOnNext(m -> deferredResult.setResult(m));
 
         return deferredResult;
     }
@@ -63,35 +46,35 @@ public class StockNonBlockingRestController {
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> listFechamentoMaximo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.fechamentosMaximo()));
+      //  executorService.execute(() -> deferredResult.setResult(stockReaderService.fechamentosMaximo()));
         return deferredResult;
     }
 
     @RequestMapping(value = "/fechamentoMinimo", method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> listFechamentoMinimo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.fechamentosMinimo()));
+   //     executorService.execute(() -> deferredResult.setResult(stockReaderService.fechamentosMinimo()));
         return deferredResult;
     }
 
     @RequestMapping(value = "/retornoMaximo", method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> listRetornoMaximo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.retornosMaximo()));
+   //     executorService.execute(() -> deferredResult.setResult(stockReaderService.retornosMaximo()));
         return deferredResult;
     }
 
     @RequestMapping(value = "/retornoMinimo", method = RequestMethod.GET)
     public DeferredResult<Collection<Movimento>> listRetornoMinimo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.retornosMinimo()));
+   //     executorService.execute(() -> deferredResult.setResult(stockReaderService.retornosMinimo()));
         return deferredResult;
     }
 
     @RequestMapping(value = "/volumeMedio", method = RequestMethod.GET)
     public DeferredResult<Collection<VolumeMedio>> listVolumeMedio() {
         DeferredResult<Collection<VolumeMedio>> deferredResult = new DeferredResult<>();
-        executorService.execute(() -> deferredResult.setResult(stockReaderService.volumesMedio()));
+   //     executorService.execute(() -> deferredResult.setResult(stockReaderService.volumesMedio()));
         return deferredResult;
     }
 
