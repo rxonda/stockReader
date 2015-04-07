@@ -2,6 +2,7 @@ package br.org.quantum.services;
 
 import br.org.quantum.dao.StockNonBlockingDatasource;
 import br.org.quantum.domain.Movimento;
+import br.org.quantum.domain.Retorno;
 import br.org.quantum.domain.VolumeMedio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,18 +39,34 @@ public class StockNonBlockingReaderImpl implements StockNonBlockingReader {
     }
 
     @Override
-    public Observable<Collection<Movimento>> fechamentosMinimo() {
-        return null;
+    public Observable<List<Movimento>> fechamentosMinimo() {
+        return stockNonBlockingDatasource.list()
+                .groupBy(m -> m.getId())
+                .flatMap(g -> g.reduce(new Movimento("", null, null, Long.MAX_VALUE),
+                        (m, m2) -> m.getId().equals("") ? m2 : comparing(Movimento::getClose).compare(m, m2) > 0 ? m2 : m))
+                .toList();
     }
 
     @Override
-    public Observable<Collection<Movimento>> retornosMaximo() {
-        return null;
+    public Observable<List<Movimento>> retornosMaximo() {
+        Observable<Movimento> o1 = stockNonBlockingDatasource.list();
+        return Observable.zip(o1, o1.skip(1), (o, p) -> new Retorno(p, o))
+                .filter(r -> r.isValid())
+                .groupBy(r -> r.getCorrente().getId())
+                .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) < 0 ? r2 : r1))
+                .flatMap(r -> Observable.just(r.getCorrente()))
+                .toList();
     }
 
     @Override
-    public Observable<Collection<Movimento>> retornosMinimo() {
-        return null;
+    public Observable<List<Movimento>> retornosMinimo() {
+        Observable<Movimento> o1 = stockNonBlockingDatasource.list();
+        return Observable.zip(o1, o1.skip(1), (o, p) -> new Retorno(p, o))
+                .filter(r -> r.isValid())
+                .groupBy(r -> r.getCorrente().getId())
+                .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) > 0 ? r2 : r1))
+                .flatMap(r -> Observable.just(r.getCorrente()))
+                .toList();
     }
 
     @Override

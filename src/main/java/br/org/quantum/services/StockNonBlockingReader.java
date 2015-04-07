@@ -15,11 +15,11 @@ public interface StockNonBlockingReader {
 
     Observable<List<Movimento>> fechamentosMaximo();
 
-    Observable<Collection<Movimento>> fechamentosMinimo();
+    Observable<List<Movimento>> fechamentosMinimo();
 
-    Observable<Collection<Movimento>> retornosMaximo();
+    Observable<List<Movimento>> retornosMaximo();
 
-    Observable<Collection<Movimento>> retornosMinimo();
+    Observable<List<Movimento>> retornosMinimo();
 
     Observable<Collection<VolumeMedio>> volumesMedio();
 }
