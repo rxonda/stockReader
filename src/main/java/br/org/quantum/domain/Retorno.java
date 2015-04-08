@@ -6,33 +6,43 @@ import java.math.BigDecimal;
  * Created by xonda on 07/04/2015.
  */
 public class Retorno {
-    BigDecimal valor;
-    Movimento corrente;
-    Movimento anterior;
+    private final BigDecimal valor;
+    private final Movimento corrente;
+    private final Movimento anterior;
 
     public Retorno() {
-
+        valor = null;
+        anterior = null;
+        corrente = null;
     }
 
-    public Retorno(Movimento corrente, Movimento anterior) {
+    private Retorno(Movimento anterior, Movimento corrente) {
         this.corrente = corrente;
         this.anterior = anterior;
-        this.valor = corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        this.valor = isValid() ? corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE) : null;
     }
 
     public BigDecimal getValor() {
+        verifica();
         return valor;
     }
 
     public Movimento getCorrente() {
+        verifica();
         return corrente;
     }
 
-    public Movimento getAnterior() {
-        return anterior;
+    public Retorno setCorrente(Movimento movimento) {
+        return new Retorno(this.corrente, movimento);
     }
 
     public Boolean isValid() {
         return corrente!=null && anterior != null && corrente.getId().equals(anterior.getId());
+    }
+
+    private void verifica() {
+        if(!isValid()) {
+            throw new IllegalStateException("Objeto eh invalido");
+        }
     }
 }

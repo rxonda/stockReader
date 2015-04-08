@@ -21,5 +21,5 @@ public interface StockNonBlockingReader {
 
     Observable<List<Movimento>> retornosMinimo();
 
-    Observable<Collection<VolumeMedio>> volumesMedio();
+    Observable<List<VolumeMedio>> volumesMedio();
 }

@@ -113,11 +113,11 @@ public class StockReaderServiceImpl implements StockReaderService {
 
     @Override
     public Collection<VolumeMedio> volumesMedio() {
-        Map<String, Double> resultado = dataSource.list()
-                .filter(m -> m.getVolume() > 0L)
-                .collect(Collectors.groupingBy(Movimento::getId, Collectors.averagingLong(Movimento::getVolume)));
         Collection<VolumeMedio> listagem = new ArrayList<>();
-        resultado.forEach((id, vl) -> listagem.add(new VolumeMedio(id, vl)));
+        dataSource.list()
+                .filter(m -> m.getVolume() > 0L)
+                .collect(Collectors.groupingBy(Movimento::getId, Collectors.averagingLong(Movimento::getVolume)))
+                .forEach((id, vl) -> listagem.add(new VolumeMedio(id, vl)));
         return listagem;
     }
 }

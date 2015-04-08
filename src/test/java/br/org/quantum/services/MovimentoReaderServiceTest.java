@@ -83,8 +83,6 @@ public class MovimentoReaderServiceTest {
         assertVolumeMedio(it.next(), "PETR4", 31236450d);
         assertVolumeMedio(it.next(), "OGXP3", 42023700d);
         assertVolumeMedio(it.next(), "VALE5", 19956466.6666667d);
-
-
     }
 
     private void assertMovimento(Movimento m, String id, Date date, BigDecimal close, Long volume) {

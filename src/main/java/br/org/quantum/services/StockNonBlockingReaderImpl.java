@@ -1,6 +1,7 @@
 package br.org.quantum.services;
 
 import br.org.quantum.dao.StockNonBlockingDatasource;
+import br.org.quantum.domain.Average;
 import br.org.quantum.domain.Movimento;
 import br.org.quantum.domain.Retorno;
 import br.org.quantum.domain.VolumeMedio;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import rx.Observable;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 
 import static java.util.Comparator.comparing;
@@ -49,8 +49,8 @@ public class StockNonBlockingReaderImpl implements StockNonBlockingReader {
 
     @Override
     public Observable<List<Movimento>> retornosMaximo() {
-        Observable<Movimento> o1 = stockNonBlockingDatasource.list();
-        return Observable.zip(o1, o1.skip(1), (o, p) -> new Retorno(p, o))
+        return stockNonBlockingDatasource.list()
+                .scan(new Retorno(), (a, c) -> a.setCorrente(c))
                 .filter(r -> r.isValid())
                 .groupBy(r -> r.getCorrente().getId())
                 .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) < 0 ? r2 : r1))
@@ -60,8 +60,8 @@ public class StockNonBlockingReaderImpl implements StockNonBlockingReader {
 
     @Override
     public Observable<List<Movimento>> retornosMinimo() {
-        Observable<Movimento> o1 = stockNonBlockingDatasource.list();
-        return Observable.zip(o1, o1.skip(1), (o, p) -> new Retorno(p, o))
+        return stockNonBlockingDatasource.list()
+                .scan(new Retorno(), (a, c) -> a.setCorrente(c))
                 .filter(r -> r.isValid())
                 .groupBy(r -> r.getCorrente().getId())
                 .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) > 0 ? r2 : r1))
@@ -70,7 +70,12 @@ public class StockNonBlockingReaderImpl implements StockNonBlockingReader {
     }
 
     @Override
-    public Observable<Collection<VolumeMedio>> volumesMedio() {
-        return null;
+    public Observable<List<VolumeMedio>> volumesMedio() {
+        return stockNonBlockingDatasource.list()
+                .filter(m -> m.getVolume() > 0L)
+                .groupBy(m -> m.getId())
+                .flatMap(g -> g.reduce(new Average(g.getKey()), (a, c) -> a.add(c.getVolume())))
+                .flatMap(r -> Observable.just(r.getVolumeMedio()))
+                .toList();
     }
 }

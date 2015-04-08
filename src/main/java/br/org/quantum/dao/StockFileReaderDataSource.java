@@ -3,13 +3,9 @@ package br.org.quantum.dao;
 import br.org.quantum.domain.Movimento;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * Created by xonda on 15/03/2015.
  */
-@Component
+@Repository
 public class StockFileReaderDataSource implements StockDataSource {
 
     private Resource resource = new ClassPathResource("acoes.csv");
