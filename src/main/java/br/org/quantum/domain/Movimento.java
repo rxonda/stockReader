@@ -7,10 +7,14 @@ import java.util.Date;
  * Created by xonda on 12/03/2015.
  */
 public class Movimento {
-    private String id;
-    private Date date;
-    private BigDecimal close;
-    private Long volume;
+    private final String id;
+    private final Date date;
+    private final BigDecimal close;
+    private final Long volume;
+
+    public Movimento(String id) {
+        this(id, null, null, null);
+    }
 
     public Movimento(String id, Date date, BigDecimal close, Long volume) {
         this.id = id;

@@ -59,74 +59,17 @@ public class StockNonBlockingCSVDatasourceTest {
         assertMovimento(movimentoArgumentCaptor.getAllValues().get(10), "VALE5", data("2013-01-04"), new BigDecimal("41.36"), 26351900L);
     }
 
-    @Test
-    public void teste() {
-
-        stockNonBlockingDatasource.list()
-                .scan(new Retorno(), (a,c) -> a.setCorrente(c))
-                .filter(r -> r.isValid())
-                .groupBy(r -> r.getCorrente().getId())
-                .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) < 0 ? r2 : r1))
-                .flatMap(r -> Observable.just(r.getCorrente()))
-                .subscribe(new Subscriber<Object>() {
-                    @Override
-                    public void onCompleted() {
-                        System.out.println("completou");
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-                        Movimento r = (Movimento) o;
-                        DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-                        System.out.println(String.format("%s %s %f", r.getId(), fmt.format(r.getDate()), r.getClose().doubleValue()));
-                    }
-                });
-
-//        Observable.zip(o1, o1.skip(1), (o, p) -> new Retorno(p, o))
-//                .filter(r -> r.isValid())
-//                .groupBy(r -> r.getCorrente().getId())
-//                .flatMap(g -> g.reduce(new Retorno(), (r1, r2) -> !r1.isValid() ? r2 : comparing(Retorno::getValor).compare(r1, r2) < 0 ? r2 : r1))
-//                .flatMap(r -> Observable.just(r.getCorrente()))
-//                .subscribe(new Subscriber<Object>() {
-//                    @Override
-//                    public void onCompleted() {
-//                        System.out.println("completou");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable throwable) {
-//                        throwable.printStackTrace();
-//                    }
-//
-//                    @Override
-//                    public void onNext(Object o) {
-//                        Movimento r = (Movimento) o;
-//                        DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-//                        System.out.println(String.format("%s %s %f", r.getId(), fmt.format(r.getDate()), r.getClose().doubleValue()));
-//                    }
-//                });
-    }
-
-
     @Autowired
     private ExecutorService executorService;
 
     @Test
     public void testeZip() {
-
         Observable<Integer> o1 = Observable.range(0, 10).subscribeOn(Schedulers.from(executorService));
         o1.subscribe(n -> System.out.println("Observer 1: " + n));
         Observable<Integer> o2 = o1.skip(1);
         o2.subscribe(n -> System.out.println("Observer 2: " + n));
         Observable.zip(o1, o1.skip(1), (a, c) -> a + c)
                 .subscribe(n -> System.out.println("A soma dos dois eh igual a " + n));
-
-
     }
 
     private void assertMovimento(Movimento m, String id, Date date, BigDecimal close, Long volume) {

@@ -1,6 +1,7 @@
 package br.org.quantum.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by xonda on 07/04/2015.
@@ -8,18 +9,38 @@ import java.math.BigDecimal;
 public class Retorno {
     private final BigDecimal valor;
     private final Movimento corrente;
-    private final Movimento anterior;
+    private final Boolean valid;
 
     public Retorno() {
         valor = null;
-        anterior = null;
         corrente = null;
+        valid = false;
     }
 
     private Retorno(Movimento anterior, Movimento corrente) {
         this.corrente = corrente;
-        this.anterior = anterior;
+        this.valid = corrente!=null && anterior != null && corrente.getId().equals(anterior.getId());
         this.valor = isValid() ? corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE) : null;
+    }
+
+    public String getId() {
+        verifica();
+        return corrente.getId();
+    }
+
+    public Date getDate() {
+        verifica();
+        return corrente.getDate();
+    }
+
+    public BigDecimal getClose() {
+        verifica();
+        return corrente.getClose();
+    }
+
+    public Long getVolume() {
+        verifica();
+        return corrente.getVolume();
     }
 
     public BigDecimal getValor() {
@@ -27,17 +48,12 @@ public class Retorno {
         return valor;
     }
 
-    public Movimento getCorrente() {
-        verifica();
-        return corrente;
-    }
-
     public Retorno setCorrente(Movimento movimento) {
         return new Retorno(this.corrente, movimento);
     }
 
     public Boolean isValid() {
-        return corrente!=null && anterior != null && corrente.getId().equals(anterior.getId());
+        return valid;
     }
 
     private void verifica() {

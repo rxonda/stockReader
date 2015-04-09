@@ -6,17 +6,17 @@ package br.org.quantum.domain;
 public class Average {
     private final String id;
     private final Integer count;
-    private final Double value;
+    private final Double volume;
 
     public Average(String id) {
         count = 0;
-        value = 0d;
+        volume = 0d;
         this.id = id;
     }
 
-    private Average(String id, Integer count, Double value) {
+    private Average(String id, Integer count, Double volume) {
         this.count = count;
-        this.value = value;
+        this.volume = volume;
         this.id = id;
     }
 
@@ -24,11 +24,15 @@ public class Average {
         if (count == 0) {
             return new Average(this.id, 1, value.doubleValue());
         } else {
-            return new Average(this.id, count + 1, (((this.value * count) + value.doubleValue()) / (count + 1)));
+            return new Average(this.id, count + 1, this.volume + ((value.doubleValue() - this.volume) / (count + 1)));
         }
     }
 
-    public VolumeMedio getVolumeMedio() {
-        return new VolumeMedio(id, value);
+    public String getId() {
+        return id;
+    }
+
+    public Double getVolume() {
+        return volume;
     }
 }

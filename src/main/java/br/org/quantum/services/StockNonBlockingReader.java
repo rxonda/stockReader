@@ -1,6 +1,8 @@
 package br.org.quantum.services;
 
+import br.org.quantum.domain.Average;
 import br.org.quantum.domain.Movimento;
+import br.org.quantum.domain.Retorno;
 import br.org.quantum.domain.VolumeMedio;
 import rx.Observable;
 
@@ -17,9 +19,9 @@ public interface StockNonBlockingReader {
 
     Observable<List<Movimento>> fechamentosMinimo();
 
-    Observable<List<Movimento>> retornosMaximo();
+    Observable<List<Retorno>> retornosMaximo();
 
-    Observable<List<Movimento>> retornosMinimo();
+    Observable<List<Retorno>> retornosMinimo();
 
-    Observable<List<VolumeMedio>> volumesMedio();
+    Observable<List<Average>> volumesMedio();
 }
