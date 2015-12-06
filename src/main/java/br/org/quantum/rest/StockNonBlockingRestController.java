@@ -3,7 +3,6 @@ package br.org.quantum.rest;
 import br.org.quantum.domain.Average;
 import br.org.quantum.domain.Movimento;
 import br.org.quantum.domain.Retorno;
-import br.org.quantum.domain.VolumeMedio;
 import br.org.quantum.services.StockNonBlockingReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
