@@ -4,7 +4,6 @@ import br.org.quantum.Application;
 import br.org.quantum.domain.Average;
 import br.org.quantum.domain.Movimento;
 import br.org.quantum.domain.Retorno;
-import br.org.quantum.domain.VolumeMedio;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
