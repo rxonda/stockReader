@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService
  */
 @RestController
 @RequestMapping("/nonblocking")
-public class StockNonBlockingRestController {
+class StockNonBlockingRestController {
     @Autowired
     private StockNonBlockingReader stockReaderService
 
@@ -26,69 +26,69 @@ public class StockNonBlockingRestController {
     private ExecutorService executorService
 
     @RequestMapping(method = RequestMethod.GET)
-    public DeferredResult<Collection<Movimento>> list() {
+    DeferredResult<Collection<Movimento>> list() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
 
         stockReaderService.list()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) })
 
-        return deferredResult
+        deferredResult
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
-    public DeferredResult<Collection<Movimento>> listFechamentoMaximo() {
+    DeferredResult<Collection<Movimento>> listFechamentoMaximo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
 
         stockReaderService.fechamentosMaximo()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) })
 
-        return deferredResult
+        deferredResult
     }
 
     @RequestMapping(value = "/fechamentoMinimo", method = RequestMethod.GET)
-    public DeferredResult<Collection<Movimento>> listFechamentoMinimo() {
+    DeferredResult<Collection<Movimento>> listFechamentoMinimo() {
         DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
 
         stockReaderService.fechamentosMinimo()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) })
 
-        return deferredResult
+        deferredResult
     }
 
     @RequestMapping(value = "/retornoMaximo", method = RequestMethod.GET)
-    public DeferredResult<Collection<Retorno>> listRetornoMaximo() {
+    DeferredResult<Collection<Retorno>> listRetornoMaximo() {
         DeferredResult<Collection<Retorno>> deferredResult = new DeferredResult<>()
 
         stockReaderService.retornosMaximo()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) })
 
-        return deferredResult
+        deferredResult
     }
 
     @RequestMapping(value = "/retornoMinimo", method = RequestMethod.GET)
-    public DeferredResult<Collection<Retorno>> listRetornoMinimo() {
+    DeferredResult<Collection<Retorno>> listRetornoMinimo() {
         DeferredResult<Collection<Retorno>> deferredResult = new DeferredResult<>()
 
         stockReaderService.retornosMinimo()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
 
-        return deferredResult
+        deferredResult
     }
 
     @RequestMapping(value = "/volumeMedio", method = RequestMethod.GET)
-    public DeferredResult<Collection<Average>> listVolumeMedio() {
+    DeferredResult<Collection<Average>> listVolumeMedio() {
         DeferredResult<Collection<Average>> deferredResult = new DeferredResult<>()
 
         stockReaderService.volumesMedio()
                 .subscribeOn(Schedulers.from(executorService))
                 .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
 
-        return deferredResult
+        deferredResult
     }
 
 }

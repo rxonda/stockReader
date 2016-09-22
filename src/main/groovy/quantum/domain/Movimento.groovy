@@ -2,36 +2,36 @@ package quantum.domain
 /**
  * Created by xonda on 12/03/2015.
  */
-public class Movimento {
+class Movimento {
     private final String id
     private final Date date
     private final BigDecimal close
     private final Long volume
 
-    public Movimento(String id) {
+    Movimento(String id) {
         this(id, null, null, null)
     }
 
-    public Movimento(String id, Date date, BigDecimal close, Long volume) {
+    Movimento(String id, Date date, BigDecimal close, Long volume) {
         this.id = id
         this.date = date
         this.close = close
         this.volume = volume
     }
 
-    public String getId() {
-        return id
+    String getId() {
+        id
     }
 
-    public Date getDate() {
-        return date
+    Date getDate() {
+        date
     }
 
-    public BigDecimal getClose() {
-        return close
+    BigDecimal getClose() {
+        close
     }
 
-    public Long getVolume() {
-        return volume
+    Long getVolume() {
+        volume
     }
 }

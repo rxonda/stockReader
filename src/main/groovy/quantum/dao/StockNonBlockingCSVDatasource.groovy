@@ -14,14 +14,13 @@ import java.text.SimpleDateFormat
  * Created by xonda on 23/03/2015.
  */
 @Repository
-public class StockNonBlockingCSVDatasource implements StockNonBlockingDatasource {
+class StockNonBlockingCSVDatasource implements StockNonBlockingDatasource {
 
     private Resource resource = new ClassPathResource("acoes.csv")
 
     @Override
-    public Observable<Movimento> list() {
-        return Observable.<Movimento>create({ subscriber ->
-
+    Observable<Movimento> list() {
+        Observable.create { subscriber ->
             try {
                 DateFormat parser = new SimpleDateFormat("yyyy-MM-dd")
 
@@ -30,7 +29,7 @@ public class StockNonBlockingCSVDatasource implements StockNonBlockingDatasource
                 subscriber.onStart()
                 bin.lines()
                         .skip(1L)
-                        .forEach({ s ->
+                        .forEach { s ->
                             StringTokenizer tokenizer = new StringTokenizer(s, ",")
                             String id = tokenizer.nextToken()
                             try {
@@ -41,13 +40,13 @@ public class StockNonBlockingCSVDatasource implements StockNonBlockingDatasource
                             } catch (ParseException e) {
                                 subscriber.onError(e)
                             }
-                        })
+                        }
                 subscriber.onCompleted()
             } catch (FileNotFoundException e) {
                 subscriber.onError(e)
             } catch (IOException e) {
                 subscriber.onError(e)
             }
-        })
+        }
     }
 }

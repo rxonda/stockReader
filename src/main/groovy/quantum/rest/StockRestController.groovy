@@ -14,37 +14,37 @@ import quantum.services.StockReaderService
  */
 @RestController
 @RequestMapping("/stocks")
-public class StockRestController {
+class StockRestController {
     @Autowired
     private StockReaderService stockReaderService
 
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody Collection<Movimento> list() {
-        return stockReaderService.list()
+    @ResponseBody Collection<Movimento> list() {
+        stockReaderService.list()
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
-    public @ResponseBody Collection<Movimento> listFechamentoMaximo() {
-        return stockReaderService.fechamentosMaximo()
+    @ResponseBody Collection<Movimento> listFechamentoMaximo() {
+        stockReaderService.fechamentosMaximo()
     }
 
     @RequestMapping(value = "/fechamentoMinimo", method = RequestMethod.GET)
-    public @ResponseBody Collection<Movimento> listFechamentoMinimo() {
-        return stockReaderService.fechamentosMinimo()
+    @ResponseBody Collection<Movimento> listFechamentoMinimo() {
+        stockReaderService.fechamentosMinimo()
     }
 
     @RequestMapping(value = "/retornoMaximo", method = RequestMethod.GET)
-    public @ResponseBody Collection<Movimento> listRetornoMaximo() {
-        return stockReaderService.retornosMaximo()
+    @ResponseBody Collection<Movimento> listRetornoMaximo() {
+        stockReaderService.retornosMaximo()
     }
 
     @RequestMapping(value = "/retornoMinimo", method = RequestMethod.GET)
-    public @ResponseBody Collection<Movimento> listRetornoMinimo() {
-        return stockReaderService.retornosMinimo()
+    @ResponseBody Collection<Movimento> listRetornoMinimo() {
+        stockReaderService.retornosMinimo()
     }
 
     @RequestMapping(value = "/volumeMedio", method = RequestMethod.GET)
-    public @ResponseBody Collection<VolumeMedio> listVolumeMedio() {
-        return stockReaderService.volumesMedio()
+    @ResponseBody Collection<VolumeMedio> listVolumeMedio() {
+        stockReaderService.volumesMedio()
     }
 }

@@ -2,12 +2,12 @@ package quantum.domain
 /**
  * Created by xonda on 07/04/2015.
  */
-public class Retorno {
+class Retorno {
     private final BigDecimal valor
     private final Movimento corrente
     private final Boolean valid
 
-    public Retorno() {
+    Retorno() {
         valor = null
         corrente = null
         valid = false
@@ -19,37 +19,37 @@ public class Retorno {
         this.valor = isValid() ? corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE) : null
     }
 
-    public String getId() {
+    String getId() {
         verifica()
-        return corrente.getId()
+        corrente.getId()
     }
 
-    public Date getDate() {
+    Date getDate() {
         verifica()
-        return corrente.getDate()
+        corrente.getDate()
     }
 
-    public BigDecimal getClose() {
+    BigDecimal getClose() {
         verifica()
-        return corrente.getClose()
+        corrente.getClose()
     }
 
-    public Long getVolume() {
+    Long getVolume() {
         verifica()
-        return corrente.getVolume()
+        corrente.getVolume()
     }
 
-    public BigDecimal getValor() {
+    BigDecimal getValor() {
         verifica()
-        return valor
+        valor
     }
 
-    public Retorno setCorrente(Movimento movimento) {
-        return new Retorno(this.corrente, movimento)
+    Retorno setCorrente(Movimento movimento) {
+        new Retorno(this.corrente, movimento)
     }
 
-    public Boolean isValid() {
-        return valid
+    Boolean isValid() {
+        valid
     }
 
     private void verifica() {

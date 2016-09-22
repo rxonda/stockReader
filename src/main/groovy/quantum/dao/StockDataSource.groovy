@@ -7,6 +7,6 @@ import java.util.stream.Stream
 /**
  * Created by xonda on 15/03/2015.
  */
-public interface StockDataSource {
+interface StockDataSource {
     Stream<Movimento> list()
 }

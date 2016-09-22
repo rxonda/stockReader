@@ -14,32 +14,32 @@ import static java.util.Comparator.comparing
  * Created by xonda on 12/03/2015.
  */
 @Service
-public class StockReaderServiceImpl implements StockReaderService {
+class StockReaderServiceImpl implements StockReaderService {
 
     @Autowired
     private StockDataSource dataSource
 
     @Override
-    public Collection<Movimento> list() {
-        return dataSource.list().collect(Collectors.toList())
+    Collection<Movimento> list() {
+        dataSource.list().collect(Collectors.toList())
     }
 
     @Override
-    public Collection<Movimento> fechamentosMaximo() {
-        return dataSource.list()
+    Collection<Movimento> fechamentosMaximo() {
+        dataSource.list()
                 .collect(Collectors.groupingBy({ m -> m.getId() }, Collectors.maxBy(comparing { m -> m.getClose() })))
                 .values().stream().map{ o -> o.get() }.collect(Collectors.toList())
     }
 
     @Override
-    public Collection<Movimento> fechamentosMinimo() {
-        return dataSource.list()
+    Collection<Movimento> fechamentosMinimo() {
+        dataSource.list()
                 .collect(Collectors.groupingBy({ m -> m.getId() }, Collectors.minBy(comparing({ m -> m.getClose() }))))
                 .values().stream().map { o -> o.get() }.collect(Collectors.toList())
     }
 
     @Override
-    public Collection<Movimento> retornosMaximo() {
+    Collection<Movimento> retornosMaximo() {
 
         Collection<Movimento> listagem = new ArrayList<>()
         Iterator<Movimento> it = dataSource.list().iterator()
@@ -69,11 +69,11 @@ public class StockReaderServiceImpl implements StockReaderService {
             listagem.add(maxMovimento)
         }
 
-        return listagem
+        listagem
     }
 
     @Override
-    public Collection<Movimento> retornosMinimo() {
+    Collection<Movimento> retornosMinimo() {
         Collection<Movimento> listagem = new ArrayList<>()
         Iterator<Movimento> it = dataSource.list().iterator()
         Movimento anterior = null
@@ -102,16 +102,16 @@ public class StockReaderServiceImpl implements StockReaderService {
             listagem.add(minMovimento)
         }
 
-        return listagem
+        listagem
     }
 
     @Override
-    public Collection<VolumeMedio> volumesMedio() {
+    Collection<VolumeMedio> volumesMedio() {
         Collection<VolumeMedio> listagem = new ArrayList<>()
         dataSource.list()
                 .filter { m -> m.getVolume() > 0L }
                 .collect(Collectors.groupingBy({ m -> m.getId()}, Collectors.averagingLong({ it.getVolume() })))
                 .forEach { id, vl -> listagem.add(new VolumeMedio(id, vl)) }
-        return listagem
+        listagem
     }
 }

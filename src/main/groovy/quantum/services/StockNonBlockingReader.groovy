@@ -8,7 +8,7 @@ import rx.Observable
 /**
  * Created by xonda on 25/03/2015.
  */
-public interface StockNonBlockingReader {
+interface StockNonBlockingReader {
     Observable<List<Movimento>> list()
 
     Observable<List<Movimento>> fechamentosMaximo()

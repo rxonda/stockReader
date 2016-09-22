@@ -6,6 +6,6 @@ import rx.Observable
 /**
  * Created by xonda on 23/03/2015.
  */
-public interface StockNonBlockingDatasource {
+interface StockNonBlockingDatasource {
     Observable<Movimento> list()
 }

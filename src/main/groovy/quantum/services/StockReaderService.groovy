@@ -6,7 +6,7 @@ import quantum.domain.VolumeMedio
 /**
  * Created by xonda on 12/03/2015.
  */
-public interface StockReaderService {
+interface StockReaderService {
     Collection<Movimento> list()
 
     Collection<Movimento> fechamentosMaximo()

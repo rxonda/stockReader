@@ -15,14 +15,14 @@ import java.util.concurrent.Executors
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
-public class Application {
+class Application {
 
     @Bean
-    public ExecutorService executorService() {
-        return Executors.newFixedThreadPool(5);
+    ExecutorService executorService() {
+        Executors.newFixedThreadPool(5);
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 }
