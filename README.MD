@@ -1,19 +1,16 @@
-Esse é um sistema para efetuar leitura em um arquivo CSV e apresentá-lo em uma página Web.
+This application reads a CSV file and presents some JSON reports
 
-A plataforma é Java e utiliza Spring Boot para o backend e Angular JS como frontend.
+This is a REST application using Groovy and Spring Boot
 
-Para utilizá-lo é necessário ter o Java 8 e Maven 3.
+This use Spock as a test framework along side with spring-test
 
-Basta fazer o clone do projeto e no diretório do projeto digitar: mvn clean package
+The build system uses gradle. To build it run the following command:
 
-Isso vai construir o jar de execucao.
+```
+$ ./gradlew build
+```
 
-Ao terminar, digite: cd target
-
-Depois, execute a aplicação digitando: java -jar stock-reader-1.0.0.jar
-
-Espera a linha no prompt avisar que o servidor web iniciou, entre no browser e digite o seguinte endereço: http://localhost:8080/home
-
-Uma outra opção após efetuar o clone do projeto é executar a aplicação direto digitando: mvn spring-boot:run
-Ao terminar, é só digitar o mesmo endereço no browser que foi dito antes.
- 
+Then run it with:
+```
+java -jar build/libs/stock-reader-0.1.0.jar
+```
