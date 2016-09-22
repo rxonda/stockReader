@@ -9,6 +9,7 @@ import quantum.domain.Average
 import quantum.domain.Movimento
 import quantum.domain.Retorno
 import quantum.services.StockNonBlockingReader
+import rx.Observable
 import rx.schedulers.Schedulers
 
 import java.util.concurrent.ExecutorService
@@ -27,68 +28,39 @@ class StockNonBlockingRestController {
 
     @RequestMapping(method = RequestMethod.GET)
     DeferredResult<Collection<Movimento>> list() {
-        DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.list()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) })
-
-        deferredResult
+        wrappResult(stockReaderService.list())
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
     DeferredResult<Collection<Movimento>> listFechamentoMaximo() {
-        DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.fechamentosMaximo()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) })
-
-        deferredResult
+        wrappResult(stockReaderService.fechamentosMaximo())
     }
 
     @RequestMapping(value = "/fechamentoMinimo", method = RequestMethod.GET)
     DeferredResult<Collection<Movimento>> listFechamentoMinimo() {
-        DeferredResult<Collection<Movimento>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.fechamentosMinimo()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) })
-
-        deferredResult
+        wrappResult(stockReaderService.fechamentosMinimo())
     }
 
     @RequestMapping(value = "/retornoMaximo", method = RequestMethod.GET)
     DeferredResult<Collection<Retorno>> listRetornoMaximo() {
-        DeferredResult<Collection<Retorno>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.retornosMaximo()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) })
-
-        deferredResult
+        wrappResult(stockReaderService.retornosMaximo())
     }
 
     @RequestMapping(value = "/retornoMinimo", method = RequestMethod.GET)
     DeferredResult<Collection<Retorno>> listRetornoMinimo() {
-        DeferredResult<Collection<Retorno>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.retornosMinimo()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
-
-        deferredResult
+        wrappResult(stockReaderService.retornosMinimo())
     }
 
     @RequestMapping(value = "/volumeMedio", method = RequestMethod.GET)
     DeferredResult<Collection<Average>> listVolumeMedio() {
-        DeferredResult<Collection<Average>> deferredResult = new DeferredResult<>()
-
-        stockReaderService.volumesMedio()
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
-
-        deferredResult
+        wrappResult(stockReaderService.volumesMedio())
     }
 
+    private wrappResult = { Observable observable ->
+        DeferredResult deferredResult = new DeferredResult()
+        observable
+                .subscribeOn(Schedulers.from(executorService))
+                .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
+        deferredResult
+    }
 }
