@@ -12,8 +12,6 @@ import quantum.services.StockNonBlockingReader
 import rx.Observable
 import rx.schedulers.Schedulers
 
-import java.util.concurrent.ExecutorService
-
 /**
  * Created by xonda on 23/03/2015.
  */
@@ -22,9 +20,6 @@ import java.util.concurrent.ExecutorService
 class StockNonBlockingRestController {
     @Autowired
     private StockNonBlockingReader stockReaderService
-
-    @Autowired
-    private ExecutorService executorService
 
     @RequestMapping(method = RequestMethod.GET)
     DeferredResult<Collection<Movimento>> list() {
@@ -59,8 +54,9 @@ class StockNonBlockingRestController {
     private wrappResult = { Observable observable ->
         DeferredResult deferredResult = new DeferredResult()
         observable
-                .subscribeOn(Schedulers.from(executorService))
-                .subscribe({ v -> deferredResult.setResult(v) }, { t -> deferredResult.setErrorResult(t) })
+                .subscribeOn(Schedulers.io())
+                .toList()
+                .subscribe({ v -> deferredResult.result = v }, { t -> deferredResult.errorResult = t })
         deferredResult
     }
 }

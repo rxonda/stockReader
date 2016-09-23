@@ -23,53 +23,49 @@ class StockNonBlockingReaderImpl implements StockNonBlockingReader {
     private StockNonBlockingDatasource stockNonBlockingDatasource
 
     @Override
-    Observable<List<Movimento>> list() {
+    Observable<Movimento> list() {
         stockNonBlockingDatasource.list()
-                .toList()
     }
 
     @Override
-    Observable<List<Movimento>> fechamentosMaximo() {
+    Observable<Movimento> fechamentosMaximo() {
         getGroupByClose(COMPARE_BY_CLOSE)
     }
 
     @Override
-    Observable<List<Movimento>> fechamentosMinimo() {
+    Observable<Movimento> fechamentosMinimo() {
         getGroupByClose(COMPARE_BY_CLOSE.reversed())
     }
 
     @Override
-    Observable<List<Retorno>> retornosMaximo() {
+    Observable<Retorno> retornosMaximo() {
         getGroupByRetorno(COMPARE_BY_VALUE)
     }
 
     @Override
-    Observable<List<Retorno>> retornosMinimo() {
+    Observable<Retorno> retornosMinimo() {
         getGroupByRetorno(COMPARE_BY_VALUE.reversed())
     }
 
     @Override
-    Observable<List<Average>> volumesMedio() {
+    Observable<Average> volumesMedio() {
         stockNonBlockingDatasource.list()
-                .filter { m -> m.getVolume() > 0L }
-                .groupBy { m -> m.getId() }
-                .flatMap { g -> g.reduce(new Average(g.getKey()), { a, c -> a.add(c.getVolume()) }) }
-                .toList()
+                .filter { m -> m.volume > 0L }
+                .groupBy { m -> m.id }
+                .flatMap { g -> g.reduce(new Average(g.key), { a, c -> a.add(c.volume) }) }
     }
 
-    private Observable<List<Movimento>> getGroupByClose(Comparator comparator) {
+    private Observable<Movimento> getGroupByClose(Comparator comparator) {
         stockNonBlockingDatasource.list()
-                .groupBy { m -> m.getId() }
-                .flatMap { g -> g.reduce(new Movimento(""), { m, m2 -> !m.getId().equals(m2.getId()) ? m2 : comparator.compare(m, m2) < 0 ? m2 : m }) }
-                .toList()
+                .groupBy { m -> m.id }
+                .flatMap { g -> g.reduce(new Movimento(""), { m, m2 -> !m.id.equals(m2.id) ? m2 : comparator.compare(m, m2) < 0 ? m2 : m }) }
     }
 
-    private Observable<List<Retorno>> getGroupByRetorno(Comparator comparator) {
+    private Observable<Retorno> getGroupByRetorno(Comparator comparator) {
         stockNonBlockingDatasource.list()
                 .scan(new Retorno(), { a, c -> a.setCorrente(c) })
-                .filter { r -> r.isValid() }
-                .groupBy { r -> r.getId() }
-                .flatMap { g -> g.reduce(new Retorno(), { r1, r2 -> !r1.isValid() ? r2 : comparator.compare(r1, r2) < 0 ? r2 : r1 }) }
-                .toList()
+                .filter { r -> r.valid }
+                .groupBy { r -> r.id }
+                .flatMap { g -> g.reduce(new Retorno(), { r1, r2 -> !r1.valid ? r2 : comparator.compare(r1, r2) < 0 ? r2 : r1 }) }
     }
 }
