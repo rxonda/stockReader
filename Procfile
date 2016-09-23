@@ -1,1 +1,1 @@
-web: ./gradlew bootRun
+web: java $JAVA_OPTS -jar build/libs/stock-reader-1.0.0.jar
