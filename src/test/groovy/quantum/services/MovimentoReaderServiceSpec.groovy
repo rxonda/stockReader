@@ -43,7 +43,7 @@ public class MovimentoReaderServiceSpec extends Specification {
         assertMovimento(it.next(), "VALE5", data("02/01/2013"), new BigDecimal("42.60"), 18515700L)
     }
 
-    void "deve Listar Fechamentos Minimo"() {
+    void "Deve Listar Fechamentos Minimo"() {
         when:
         Collection<Movimento> movimentos = stockReaderService.fechamentosMinimo()
         

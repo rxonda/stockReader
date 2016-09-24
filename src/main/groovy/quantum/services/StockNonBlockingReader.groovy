@@ -9,15 +9,13 @@ import rx.Observable
  * Created by xonda on 25/03/2015.
  */
 interface StockNonBlockingReader {
-    Observable<Movimento> list()
+    Closure<Observable<Movimento>> fechamentosMaximo()
 
-    Observable<Movimento> fechamentosMaximo()
+    Closure<Observable<Movimento>> fechamentosMinimo()
 
-    Observable<Movimento> fechamentosMinimo()
+    Closure<Observable<Retorno>> retornosMaximo()
 
-    Observable<Retorno> retornosMaximo()
+    Closure<Observable<Retorno>> retornosMinimo()
 
-    Observable<Retorno> retornosMinimo()
-
-    Observable<Average> volumesMedio()
+    Closure<Observable<Average>> volumesMedio()
 }
