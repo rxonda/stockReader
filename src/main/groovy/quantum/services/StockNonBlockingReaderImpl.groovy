@@ -1,13 +1,10 @@
 package quantum.services
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import quantum.dao.StockNonBlockingDatasource
 import quantum.domain.Average
 import quantum.domain.Movimento
 import quantum.domain.Retorno
 import rx.Observable
-import rx.schedulers.Schedulers
 
 import static java.util.Comparator.comparing
 
