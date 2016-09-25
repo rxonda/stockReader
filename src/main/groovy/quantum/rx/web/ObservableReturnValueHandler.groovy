@@ -1,6 +1,7 @@
 package quantum.rx.web
 
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.MethodParameter
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.async.DeferredResult
@@ -11,6 +12,9 @@ import rx.Observable
 
 @Slf4j
 class ObservableReturnValueHandler implements HandlerMethodReturnValueHandler {
+
+    @Value('${async.response.timeout}')
+    private int responseTimeout
 
     boolean supportsReturnType(MethodParameter returnType) {
         Class parameterType = returnType.getParameterType()
@@ -25,10 +29,25 @@ class ObservableReturnValueHandler implements HandlerMethodReturnValueHandler {
             return
         }
 
-        DeferredResult<Object> deferredResult = new DeferredResult<Object>()
+        int timeout = webRequest.getParameter('timeout')?.toInteger()?:responseTimeout
+
+        DeferredResult deferredResult = new DeferredResult(timeout)
+
         Observable observable = returnValue.toList()
-        log.info 'CONVERTING OBSERVABLE TO DEFERREDRESULT'
-        observable.subscribe({result -> deferredResult.setResult(result)}, {errors -> deferredResult.setErrorResult(errors)})
+
+        log.info "Converting Observable to Springs DeferredResult with timeout of $timeout"
+
+        observable.subscribe({result ->
+            if(deferredResult.setOrExpired) {
+                log.error('Response Timeout')
+            } else {
+                deferredResult.setResult(result)
+            }}, {errors ->
+            if(deferredResult.setOrExpired) {
+                log.error('Response timeout')
+            } else {
+                deferredResult.setErrorResult(errors)
+            }})
 
         WebAsyncUtils.getAsyncManager(webRequest).startDeferredResultProcessing(deferredResult, mavContainer)
     }
