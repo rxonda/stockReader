@@ -41,6 +41,12 @@ dependencies {
 
     compile 'io.reactivex:rxjava:1.1.9'
 
+    compile 'org.slf4j:slf4j-api:1.6.4'
+
+    compile 'ch.qos.logback:logback-classic:1.0.0'
+
+    compile 'ch.qos.logback:logback-core:1.0.0'
+
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
@@ -48,11 +54,8 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 
     testCompile 'junit:junit:4.12'
+}
 
-    compile group: 'org.slf4j', name:'slf4j-api', version: '1.6.4'
-
-    logbackVersion = '1.0.0'
-    compile group: 'ch.qos.logback', name:'logback-classic', version: logbackVersion
-
-    compile group: 'ch.qos.logback', name:'logback-core', version: logbackVersion
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
 }

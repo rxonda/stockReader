@@ -1,3 +1,6 @@
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.core.ConsoleAppender
 
 appender("Console-Appender", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
@@ -5,4 +8,4 @@ appender("Console-Appender", ConsoleAppender) {
     }
 }
 
-root(INFO,["Console-Appender"])
+root(Level.INFO,["Console-Appender"])
