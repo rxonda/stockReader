@@ -17,15 +17,15 @@ class ObservableReturnValueHandler implements HandlerMethodReturnValueHandler {
     private int responseTimeout
 
     boolean supportsReturnType(MethodParameter returnType) {
-        Class parameterType = returnType.getParameterType()
-        return Observable.class.isAssignableFrom(parameterType)
+        Class parameterType = returnType.parameterType
+        Observable.class.isAssignableFrom(parameterType)
     }
 
     void handleReturnValue(Object returnValue,
                                   MethodParameter returnType, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest) throws Exception {
         if(returnValue == null) {
-            mavContainer.setRequestHandled(true)
+            mavContainer.requestHandled = true
             return
         }
 
@@ -33,13 +33,13 @@ class ObservableReturnValueHandler implements HandlerMethodReturnValueHandler {
 
         DeferredResult deferredResult = new DeferredResult(timeout)
 
-        Observable observable = returnValue.toList()
+        Observable observable = returnValue
 
         log.info "Converting Observable to Springs DeferredResult with timeout of $timeout"
 
-        observable.subscribe({result ->
+        observable.toList().subscribe({result ->
             if(deferredResult.setOrExpired) {
-                log.error('Response Timeout')
+                log.error('Response timeout')
             } else {
                 deferredResult.setResult(result)
             }}, {errors ->
