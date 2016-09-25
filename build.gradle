@@ -48,4 +48,11 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 
     testCompile 'junit:junit:4.12'
+
+    compile group: 'org.slf4j', name:'slf4j-api', version: '1.6.4'
+
+    logbackVersion = '1.0.0'
+    compile group: 'ch.qos.logback', name:'logback-classic', version: logbackVersion
+
+    compile group: 'ch.qos.logback', name:'logback-core', version: logbackVersion
 }
