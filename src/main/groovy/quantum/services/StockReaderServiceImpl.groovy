@@ -1,12 +1,12 @@
 package quantum.services
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import quantum.dao.StockDataSource
+import quantum.domain.Average
 import quantum.domain.Movimento
-import quantum.domain.VolumeMedio
+import quantum.domain.Retorno
 
 import java.util.stream.Collectors
+import java.util.stream.Stream
 
 import static java.util.Comparator.comparing
 
@@ -16,102 +16,62 @@ import static java.util.Comparator.comparing
 @Service
 class StockReaderServiceImpl implements StockReaderService {
 
-    @Autowired
-    private StockDataSource dataSource
+    private static final Comparator<Movimento> COMPARE_BY_CLOSE = comparing { c -> c.getClose() }
+    private static final Comparator<Retorno> COMPARE_BY_VALUE = comparing{ c -> c.getValor() }
 
     @Override
-    Collection<Movimento> list() {
-        dataSource.list().collect(Collectors.toList())
+    Closure<Collection<Movimento>> fechamentosMaximo() {
+        getGroupByClose(COMPARE_BY_CLOSE)
     }
 
     @Override
-    Collection<Movimento> fechamentosMaximo() {
-        dataSource.list()
-                .collect(Collectors.groupingBy({ m -> m.getId() }, Collectors.maxBy(comparing { m -> m.getClose() })))
-                .values().stream().map{ o -> o.get() }.collect(Collectors.toList())
+    Closure<Collection<Movimento>> fechamentosMinimo() {
+        getGroupByClose(COMPARE_BY_CLOSE.reversed())
     }
 
     @Override
-    Collection<Movimento> fechamentosMinimo() {
-        dataSource.list()
-                .collect(Collectors.groupingBy({ m -> m.getId() }, Collectors.minBy(comparing({ m -> m.getClose() }))))
-                .values().stream().map { o -> o.get() }.collect(Collectors.toList())
+    Closure<Collection<Retorno>> retornosMaximo() {
+        getGroupByRetorno(COMPARE_BY_VALUE)
     }
 
     @Override
-    Collection<Movimento> retornosMaximo() {
+    Closure<Collection<Retorno>> retornosMinimo() {
+        getGroupByRetorno(COMPARE_BY_VALUE.reversed())
+    }
 
-        Collection<Movimento> listagem = new ArrayList<>()
-        Iterator<Movimento> it = dataSource.list().iterator()
-        Movimento anterior = null
-        BigDecimal maxRetorno = null
-        Movimento maxMovimento = null
-        while(it.hasNext()) {
-            Movimento corrente = it.next()
-            //Nao estou calculando o retorno se nao houve movimento
-            //no dia anterior.
-            if (anterior == null) {
-                anterior = corrente
-            } else if (anterior.getId().equals(corrente.getId())) {
-                BigDecimal retorno = corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE)
-                if (maxRetorno == null || maxRetorno.compareTo(retorno) < 0){
-                    maxRetorno = retorno
-                    maxMovimento = corrente
-                }
-                anterior = corrente
-            } else {
-                listagem.add(maxMovimento)
-                maxRetorno = null
-                anterior = corrente
-            }
+    @Override
+    Closure<Collection<Average>> volumesMedio() {
+        { Stream<Movimento> movimentoObservable ->
+            movimentoObservable
+                    .filter { m -> m.volume > 0L }
+                    .collect(Collectors.groupingBy{ m -> m.id })
+                    .collect { k, g ->
+                        g.inject(new Average(k)) { a, c -> a.add(c.volume) }
+                    }
         }
-        if(maxRetorno!=null) {
-            listagem.add(maxMovimento)
-        }
-
-        listagem
     }
 
-    @Override
-    Collection<Movimento> retornosMinimo() {
-        Collection<Movimento> listagem = new ArrayList<>()
-        Iterator<Movimento> it = dataSource.list().iterator()
-        Movimento anterior = null
-        BigDecimal minRetorno = null
-        Movimento minMovimento = null
-        while(it.hasNext()) {
-            Movimento corrente = it.next()
-            //Nao estou calculando o retorno se nao houve movimento
-            //no dia anterior.
-            if (anterior == null) {
-                anterior = corrente
-            } else if (anterior.getId().equals(corrente.getId())) {
-                BigDecimal retorno = corrente.getClose().divide(anterior.getClose(), 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE)
-                if (minRetorno == null || minRetorno.compareTo(retorno) > 0){
-                    minRetorno = retorno
-                    minMovimento = corrente
-                }
-                anterior = corrente
-            } else {
-                listagem.add(minMovimento)
-                minRetorno = null
-                anterior = corrente
-            }
+    private Closure<Collection<Movimento>> getGroupByClose(Comparator comparator) {
+        { Stream<Movimento> movimentoObservable ->
+            movimentoObservable
+                    .collect(Collectors.groupingBy { m -> m.id })
+                    .collect { String k, List g ->
+                        g.inject (new Movimento(id:'')) { m, m2 ->
+                            !m.id.equals(m2.id) ? m2 : comparator.compare(m, m2) < 0 ? m2 : m
+                        }
+                    }
         }
-        if(minRetorno!=null) {
-            listagem.add(minMovimento)
-        }
-
-        listagem
     }
 
-    @Override
-    Collection<VolumeMedio> volumesMedio() {
-        Collection<VolumeMedio> listagem = new ArrayList<>()
-        dataSource.list()
-                .filter { m -> m.getVolume() > 0L }
-                .collect(Collectors.groupingBy({ m -> m.getId()}, Collectors.averagingLong({ it.getVolume() })))
-                .forEach { id, vl -> listagem.add(new VolumeMedio(id, vl)) }
-        listagem
+    private Closure<Collection<Retorno>> getGroupByRetorno(Comparator comparator) {
+        { Stream<Movimento> movimentoObservable ->
+            movimentoObservable
+                    .collect(Collectors.groupingBy { m -> m.id })
+                    .collect { String id, Collection movimentos ->
+                        movimentos.inject(new Retorno()) { r, m ->
+                                    r.setCorrente(m)
+                                }
+                    }
+        }
     }
 }

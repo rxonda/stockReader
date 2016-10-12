@@ -1,17 +1,19 @@
 package quantum.services
 
-import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import quantum.Application
+import quantum.dao.StockDataSource
+import quantum.domain.Average
 import quantum.domain.Movimento
-import quantum.domain.VolumeMedio
+import quantum.domain.Retorno
 import spock.lang.Specification
 
-import java.text.DateFormat
-import java.text.ParseException
-import java.text.SimpleDateFormat
+import static quantum.TestUtils.assertMovimento
+import static quantum.TestUtils.assertRetorno
+import static quantum.TestUtils.assertVolumeMedio
+import static quantum.TestUtils.data
 
 /**
  * Created by xonda on 12/03/2015.
@@ -23,96 +25,67 @@ public class MovimentoReaderServiceSpec extends Specification {
     @Autowired
     private StockReaderService stockReaderService
 
-    void "Deve Ler A Listagem De Movimento"() {
-        when:
-        Collection<Movimento> movimentos = stockReaderService.list()
-        then:
-        assert 11 == movimentos.size(), 'A qtd de movimentos deve ser '
-    }
+    @Autowired
+    private StockDataSource stockDataSource
 
     void "Deve Listar Fechamentos Maximo"() {
         when:
-        Collection<Movimento> movimentos = stockReaderService.fechamentosMaximo()
+        Collection<Movimento> movimentos = stockReaderService.fechamentosMaximo()(stockDataSource.list())
         
         then:
-        assert 3 == movimentos.size(), 'A Qtd de fechamentos deve ser '
-        
         Iterator<Movimento> it = movimentos.iterator()
-        assertMovimento(it.next(), "PETR4", data("04/01/2013"), new BigDecimal("20.43"), 36141000L)
-        assertMovimento(it.next(), "OGXP3", data("03/01/2013"), new BigDecimal("4.90"), 38143400L)
-        assertMovimento(it.next(), "VALE5", data("02/01/2013"), new BigDecimal("42.60"), 18515700L)
+        assertMovimento(it.next(), "PETR4", data("2013-01-04"), new BigDecimal("20.43"), 36141000L)
+        assertMovimento(it.next(), "OGXP3", data("2013-01-03"), new BigDecimal("4.90"), 38143400L)
+        assertMovimento(it.next(), "VALE5", data("2013-01-02"), new BigDecimal("42.60"), 18515700L)
     }
 
     void "Deve Listar Fechamentos Minimo"() {
         when:
-        Collection<Movimento> movimentos = stockReaderService.fechamentosMinimo()
+        Collection<Movimento> movimentos = stockReaderService.fechamentosMinimo()(stockDataSource.list())
         
         then:
         assert 3 == movimentos.size(), 'A Qtd de fechamentos deve ser '
         
         Iterator<Movimento> it = movimentos.iterator()
-        assertMovimento(it.next(), "PETR4", data("02/01/2013"), new BigDecimal("19.69"), 30182600L)
-        assertMovimento(it.next(), "OGXP3", data("01/01/2013"), new BigDecimal("4.38"), 0L)
-        assertMovimento(it.next(), "VALE5", data("01/01/2013"), new BigDecimal("40.87"), 0L)
+        assertMovimento(it.next(), "PETR4", data("2013-01-02"), new BigDecimal("19.69"), 30182600L)
+        assertMovimento(it.next(), "OGXP3", data("2013-01-01"), new BigDecimal("4.38"), 0L)
+        assertMovimento(it.next(), "VALE5", data("2013-01-01"), new BigDecimal("40.87"), 0L)
     }
 
     void "Deve Listar Retorno Maximo"() {
         when:
-        Collection<Movimento> movimentos = stockReaderService.retornosMaximo()
+        Collection<Retorno> retornos = stockReaderService.retornosMaximo()(stockDataSource.list())
         
         then:
-        assert 3 == movimentos.size(), 'A Qtd de fechamentos deve ser '
-        
-        Iterator<Movimento> it = movimentos.iterator()
-        assertMovimento(it.next(), "OGXP3", data("02/01/2013"), new BigDecimal("4.76"), 45904000L)
-        assertMovimento(it.next(), "PETR4", data("03/01/2013"), new BigDecimal("20.40"), 30552600L)
-        assertMovimento(it.next(), "VALE5", data("02/01/2013"), new BigDecimal("42.60"), 18515700L)
+        assert 3 == retornos.size(), 'A Qtd de fechamentos deve ser '
+
+        assertRetorno(retornos[0], "PETR4", data("2013-01-03"), new BigDecimal("20.40"), 30552600L)
+        assertRetorno(retornos[1], "OGXP3", data("2013-01-02"), new BigDecimal("4.76"), 45904000L)
+        assertRetorno(retornos[2], "VALE5", data("2013-01-02"), new BigDecimal("42.60"), 18515700L)
     }
 
     void "Deve Listar Retorno Minimo"() {
         when:
-        Collection<Movimento> movimentos = stockReaderService.retornosMinimo()
+        Collection<Retorno> retornos = stockReaderService.retornosMinimo()(stockDataSource.list())
         
         then:
-        assert 3 == movimentos.size(), 'A Qtd de fechamentos deve ser '
-        
-        Iterator<Movimento> it = movimentos.iterator()
-        assertMovimento(it.next(), "OGXP3", data("03/01/2013"), new BigDecimal("4.90"), 38143400L)
-        assertMovimento(it.next(), "PETR4", data("07/01/2013"), new BigDecimal("20.08"), 28069600L)
-        assertMovimento(it.next(), "VALE5", data("04/01/2013"), new BigDecimal("41.36"), 26351900L)
+        assert 3 == retornos.size(), 'A Qtd de fechamentos deve ser'
+
+        assertRetorno(retornos[0], "PETR4", data("2013-01-07"), new BigDecimal("20.08"), 28069600L)
+        assertRetorno(retornos[1], "OGXP3", data("2013-01-03"), new BigDecimal("4.90"), 38143400L)
+        assertRetorno(retornos[2], "VALE5", data("2013-01-04"), new BigDecimal("41.36"), 26351900L)
     }
 
     void "Deve Listar Volume Medio Cada Acao"() {
         when:
-        Collection<VolumeMedio> movimentos = stockReaderService.volumesMedio()
+        Collection<Average> movimentos = stockReaderService.volumesMedio()(stockDataSource.list())
         
         then:
         assert 3 == movimentos.size(), 'A Qtd de fechamentos deve ser '
 
-        Iterator<VolumeMedio> it = movimentos.iterator()
+        Iterator<Average> it = movimentos.iterator()
         assertVolumeMedio(it.next(), "PETR4", 31236450d)
         assertVolumeMedio(it.next(), "OGXP3", 42023700d)
         assertVolumeMedio(it.next(), "VALE5", 19956466.6666667d)
-    }
-
-    private void assertMovimento(Movimento m, String id, Date date, BigDecimal close, Long volume) {
-        assert id == m.getId(), 'O id do movimento deve ser '
-        assert date == m.getDate(), 'A data do movimento deve ser '
-        assert close == m.getClose(), 'O fechamento deve ser '
-        assert volume == m.getVolume(), 'O volume deve ser '
-    }
-
-    private void assertVolumeMedio(VolumeMedio v, String id, Double volume) {
-        assert id == v.getId(), 'O id do movimento deve ser'
-        Assert.assertEquals('O volume deve ser ', volume, v.getVolume(), 0.001d)
-    }
-
-    private Date data(String date) {
-        DateFormat fmt = new SimpleDateFormat("dd/MM/yyyy")
-        try {
-            return fmt.parse(date)
-        } catch (ParseException e) {
-            throw new RuntimeException(e)
-        }
     }
 }

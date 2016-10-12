@@ -1,21 +1,21 @@
 package quantum.services
 
-import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import quantum.Application
-import quantum.dao.StockNonBlockingDatasource
+import quantum.dao.StockDataSource
 import quantum.domain.Average
 import quantum.domain.Movimento
 import quantum.domain.Retorno
 import rx.observers.TestSubscriber
-import rx.schedulers.Schedulers
 import spock.lang.Specification
 
-import java.text.DateFormat
-import java.text.ParseException
-import java.text.SimpleDateFormat
+import static quantum.TestUtils.assertMovimento
+import static quantum.TestUtils.assertRetorno
+import static quantum.TestUtils.assertVolumeMedio
+import static quantum.TestUtils.data
+import static quantum.rx.RxUtils.convertFromStream
 
 /**
  * Created by xonda on 08/04/2015.
@@ -28,14 +28,14 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
     private StockNonBlockingReader stockNonBlockingReader
 
     @Autowired
-    private StockNonBlockingDatasource stockNonBlockingDatasource
+    private StockDataSource stockDataSource
 
     void "Deve Listar Fechamentos Maximo"() {
         setup:
         TestSubscriber<Collection> mockSubscriber = new TestSubscriber<>()
 
         when:
-        stockNonBlockingReader.fechamentosMaximo()(stockNonBlockingDatasource.list()).subscribe(mockSubscriber)
+        stockNonBlockingReader.fechamentosMaximo()(convertFromStream(stockDataSource.list())).subscribe(mockSubscriber)
 
         then:
         List<Movimento> movimentos = mockSubscriber.getOnNextEvents()
@@ -52,7 +52,7 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
         TestSubscriber<Collection> mockSubscriber = new TestSubscriber<>()
 
         when:
-        stockNonBlockingReader.fechamentosMinimo()(stockNonBlockingDatasource.list()).subscribe(mockSubscriber)
+        stockNonBlockingReader.fechamentosMinimo()(convertFromStream(stockDataSource.list())).subscribe(mockSubscriber)
 
         then:
         List<Movimento> movimentos = mockSubscriber.getOnNextEvents()
@@ -69,7 +69,7 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
         TestSubscriber<Collection> mockSubscriber = new TestSubscriber<>()
 
         when:
-        stockNonBlockingReader.retornosMaximo()(stockNonBlockingDatasource.list()).subscribe(mockSubscriber)
+        stockNonBlockingReader.retornosMaximo()(convertFromStream(stockDataSource.list())).subscribe(mockSubscriber)
 
         then:
         List<Retorno> retornos = mockSubscriber.getOnNextEvents()
@@ -86,7 +86,7 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
         TestSubscriber<Collection> mockSubscriber = new TestSubscriber<>()
 
         when:
-        stockNonBlockingReader.retornosMinimo()(stockNonBlockingDatasource.list()).subscribe(mockSubscriber)
+        stockNonBlockingReader.retornosMinimo()(convertFromStream(stockDataSource.list())).subscribe(mockSubscriber)
 
         then:
         List<Retorno> retornos = mockSubscriber.getOnNextEvents()
@@ -103,7 +103,7 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
         TestSubscriber<Collection> mockSubscriber = new TestSubscriber<>()
 
         when:
-        stockNonBlockingReader.volumesMedio()(stockNonBlockingDatasource.list()).subscribe(mockSubscriber)
+        stockNonBlockingReader.volumesMedio()(convertFromStream(stockDataSource.list())).subscribe(mockSubscriber)
 
         then:
         List<Average> averages = mockSubscriber.getOnNextEvents()
@@ -113,33 +113,5 @@ class MovimentoNonBlockingReaderServiceSpec extends Specification {
         assertVolumeMedio(averages[0], "PETR4", 31236450d)
         assertVolumeMedio(averages[1], "OGXP3", 42023700d)
         assertVolumeMedio(averages[2], "VALE5", 19956466.6666667d)
-    }
-
-    private void assertMovimento(Movimento m, String id, Date date, BigDecimal close, Long volume) {
-        assert id == m.id, 'O id do movimento deve ser'
-        assert date == m.date, 'A data do movimento deve ser'
-        assert close == m.close, 'O fechamento deve ser '
-        assert volume == m.volume, 'O volume deve ser '
-    }
-
-    private void assertRetorno(Retorno r, String id, Date date, BigDecimal close, Long volume) {
-        assert id == r.id, 'O id do movimento deve ser'
-        assert date == r.date, 'A data do movimento deve ser'
-        assert close == r.close, 'O fechamento deve ser '
-        assert volume == r.volume, 'O volume deve ser'
-    }
-
-    private void assertVolumeMedio(Average v, String id, Double volume) {
-        assert id == v.id, 'O id do movimento deve ser '
-        Assert.assertEquals('O volume deve ser ', volume, v.volume, 0.001d)
-    }
-
-    private Date data(String date) {
-        DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd")
-        try {
-            return fmt.parse(date)
-        } catch (ParseException e) {
-            throw new RuntimeException(e)
-        }
     }
 }

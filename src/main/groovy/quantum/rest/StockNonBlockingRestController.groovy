@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-import quantum.dao.StockNonBlockingDatasource
+import quantum.dao.StockDataSource
 import quantum.domain.Average
 import quantum.domain.Movimento
 import quantum.domain.Retorno
 import quantum.services.StockNonBlockingReader
 import rx.Observable
+
+import static quantum.rx.RxUtils.convertFromStream
 
 /**
  * Created by xonda on 23/03/2015.
@@ -21,11 +23,11 @@ class StockNonBlockingRestController {
     private StockNonBlockingReader stockReaderService
 
     @Autowired
-    private StockNonBlockingDatasource stockNonBlockingDatasource
+    private StockDataSource stockDataSource
 
     @RequestMapping(method = RequestMethod.GET)
     Observable<Movimento> list() {
-        stockNonBlockingDatasource.list()
+        convertFromStream(stockDataSource.list())
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
@@ -54,6 +56,6 @@ class StockNonBlockingRestController {
     }
 
     private Observable applyObservable(Closure<Observable> closure) {
-        closure(stockNonBlockingDatasource.list())
+        closure(convertFromStream(stockDataSource.list()))
     }
 }

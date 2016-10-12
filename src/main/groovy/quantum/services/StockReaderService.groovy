@@ -1,21 +1,21 @@
 package quantum.services
 
 import quantum.domain.Movimento
-import quantum.domain.VolumeMedio
+import quantum.domain.Average
+
+import java.util.stream.Stream
 
 /**
  * Created by xonda on 12/03/2015.
  */
 interface StockReaderService {
-    Collection<Movimento> list()
+    Closure<Stream<Movimento>> fechamentosMaximo()
 
-    Collection<Movimento> fechamentosMaximo()
+    Closure<Stream<Movimento>> fechamentosMinimo()
 
-    Collection<Movimento> fechamentosMinimo()
+    Closure<Stream<Movimento>> retornosMaximo()
 
-    Collection<Movimento> retornosMaximo()
+    Closure<Stream<Movimento>> retornosMinimo()
 
-    Collection<Movimento> retornosMinimo()
-
-    Collection<VolumeMedio> volumesMedio()
+    Closure<Stream<Average>> volumesMedio()
 }

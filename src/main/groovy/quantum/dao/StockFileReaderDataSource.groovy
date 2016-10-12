@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository
 import quantum.domain.Movimento
 
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.stream.Stream
 
@@ -16,34 +15,23 @@ import java.util.stream.Stream
 @Repository
 class StockFileReaderDataSource implements StockDataSource {
 
-    private Resource resource = new ClassPathResource("acoes.csv")
-
     @Override
     Stream<Movimento> list() {
-        try {
-            DateFormat parser = new SimpleDateFormat("yyyy-MM-dd")
+        Resource resource = new ClassPathResource("acoes.csv")
+        InputStream inputStream = resource.getInputStream()
+        BufferedReader bin = new BufferedReader(new InputStreamReader(inputStream))
+        bin.lines()
+                .skip(1L)
+                .map (deserialize)
+    }
 
-            InputStream inputStream = resource.getInputStream()
-            BufferedReader bin = new BufferedReader(new InputStreamReader(inputStream))
-
-            bin.lines()
-                    .skip(1L)
-                    .map{ s ->
-                        StringTokenizer tokenizer = new StringTokenizer(s, ",")
-                        String id = tokenizer.nextToken()
-                        try {
-                            Date date = parser.parse(tokenizer.nextToken())
-                            BigDecimal close = new BigDecimal(tokenizer.nextToken())
-                            Long volume = Long.parseLong(tokenizer.nextToken())
-                            return new Movimento(id, date, close, volume)
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e)
-                        }
-                    }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private Closure deserialize = { String line ->
+        DateFormat parser = new SimpleDateFormat("yyyy-MM-dd")
+        StringTokenizer tokenizer = new StringTokenizer(line, ",")
+        String id = tokenizer.nextToken()
+        Date date = parser.parse(tokenizer.nextToken())
+        BigDecimal close = new BigDecimal(tokenizer.nextToken())
+        Long volume = Long.parseLong(tokenizer.nextToken())
+        new Movimento([id: id, date: date, close: close, volume: volume])
     }
 }

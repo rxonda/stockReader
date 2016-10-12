@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import quantum.dao.StockDataSource
+import quantum.domain.Average
 import quantum.domain.Movimento
-import quantum.domain.VolumeMedio
 import quantum.services.StockReaderService
+
+import java.util.stream.Collectors
 
 /**
  * Created by xonda on 13/03/2015.
@@ -18,33 +21,36 @@ class StockRestController {
     @Autowired
     private StockReaderService stockReaderService
 
+    @Autowired
+    private StockDataSource stockDataSource
+
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody Collection<Movimento> list() {
-        stockReaderService.list()
+        stockDataSource.list().collect(Collectors.toList())
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
     @ResponseBody Collection<Movimento> listFechamentoMaximo() {
-        stockReaderService.fechamentosMaximo()
+        stockReaderService.fechamentosMaximo()(stockDataSource.list())
     }
 
     @RequestMapping(value = "/fechamentoMinimo", method = RequestMethod.GET)
     @ResponseBody Collection<Movimento> listFechamentoMinimo() {
-        stockReaderService.fechamentosMinimo()
+        stockReaderService.fechamentosMinimo()(stockDataSource.list())
     }
 
     @RequestMapping(value = "/retornoMaximo", method = RequestMethod.GET)
     @ResponseBody Collection<Movimento> listRetornoMaximo() {
-        stockReaderService.retornosMaximo()
+        stockReaderService.retornosMaximo()(stockDataSource.list())
     }
 
     @RequestMapping(value = "/retornoMinimo", method = RequestMethod.GET)
     @ResponseBody Collection<Movimento> listRetornoMinimo() {
-        stockReaderService.retornosMinimo()
+        stockReaderService.retornosMinimo()(stockDataSource.list())
     }
 
     @RequestMapping(value = "/volumeMedio", method = RequestMethod.GET)
-    @ResponseBody Collection<VolumeMedio> listVolumeMedio() {
-        stockReaderService.volumesMedio()
+    @ResponseBody Collection<Average> listVolumeMedio() {
+        stockReaderService.volumesMedio()(stockDataSource.list())
     }
 }
