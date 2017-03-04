@@ -9,4 +9,5 @@ import java.util.stream.Stream
  */
 interface StockDataSource {
     Stream<Movimento> list()
+    Stream<Movimento> list(Map params)
 }

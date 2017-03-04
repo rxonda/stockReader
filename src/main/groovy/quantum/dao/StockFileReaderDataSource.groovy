@@ -16,13 +16,23 @@ import java.util.stream.Stream
 class StockFileReaderDataSource implements StockDataSource {
 
     @Override
-    Stream<Movimento> list() {
+    Stream<Movimento> list(Map params = [:]) {
+        Stream s = source().lines().skip(1L)
+        if(params.start) {
+            s = s.skip(params.start)
+        }
+        if(params.offset) {
+            s = s.limit(params.offset)
+        }
+
+        s.map (deserialize)
+    }
+
+    private BufferedReader source() {
         Resource resource = new ClassPathResource("acoes.csv")
         InputStream inputStream = resource.getInputStream()
         BufferedReader bin = new BufferedReader(new InputStreamReader(inputStream))
-        bin.lines()
-                .skip(1L)
-                .map (deserialize)
+        bin
     }
 
     private Closure deserialize = { String line ->

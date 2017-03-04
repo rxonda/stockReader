@@ -3,6 +3,7 @@ package quantum.rest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import quantum.dao.StockDataSource
 import quantum.domain.Average
@@ -19,6 +20,9 @@ import static quantum.rx.RxUtils.convertFromStream
 @RestController
 @RequestMapping("/nonblocking")
 class StockNonBlockingRestController {
+
+    private static final long PAGE_SIZE = 10L
+
     @Autowired
     private StockNonBlockingReader stockReaderService
 
@@ -26,8 +30,8 @@ class StockNonBlockingRestController {
     private StockDataSource stockDataSource
 
     @RequestMapping(method = RequestMethod.GET)
-    Observable<Movimento> list() {
-        convertFromStream(stockDataSource.list())
+    Observable<Movimento> list(@RequestParam Map<String, String> params) {
+        convertFromStream(stockDataSource.list(convertRequestPagination(params)))
     }
 
     @RequestMapping(value = "/fechamentoMaximo", method = RequestMethod.GET)
@@ -57,5 +61,20 @@ class StockNonBlockingRestController {
 
     private Observable applyObservable(Closure<Observable> closure) {
         closure(convertFromStream(stockDataSource.list()))
+    }
+
+    private static Map convertRequestPagination(Map<String, String> params) {
+        Map result = [:]
+        if(params.start){
+            result.start = Long.parseLong(params.start)
+            result.offset = (params.offset) ? Long.parseLong(params.offset) : PAGE_SIZE
+        } else if(params.number) {
+            long pageNumber = Long.parseLong(params.number)
+            long pageSize = (params.size) ? Long.parseLong(params.size) : PAGE_SIZE
+            result.start = pageNumber * pageSize
+            result.offset = pageSize
+        }
+
+        result
     }
 }
