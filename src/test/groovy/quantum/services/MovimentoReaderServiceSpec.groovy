@@ -8,6 +8,7 @@ import quantum.dao.StockDataSource
 import quantum.domain.Average
 import quantum.domain.Movimento
 import quantum.domain.Retorno
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static quantum.TestUtils.assertMovimento
@@ -52,6 +53,7 @@ public class MovimentoReaderServiceSpec extends Specification {
         assertMovimento(it.next(), "VALE5", data("2013-01-01"), new BigDecimal("40.87"), 0L)
     }
 
+    @Ignore
     void "Deve Listar Retorno Maximo"() {
         when:
         Collection<Retorno> retornos = stockReaderService.retornosMaximo()(stockDataSource.list())
