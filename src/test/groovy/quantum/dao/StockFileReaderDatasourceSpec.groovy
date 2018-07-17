@@ -1,9 +1,5 @@
 package quantum.dao
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ContextConfiguration
-import quantum.Application
 import quantum.domain.Movimento
 import spock.lang.Specification
 
@@ -12,12 +8,9 @@ import java.util.stream.Stream
 import static quantum.TestUtils.assertMovimento
 import static quantum.TestUtils.data
 
-@ContextConfiguration
-@SpringBootTest(classes = Application.class)
 class StockFileReaderDatasourceSpec extends Specification {
 
-    @Autowired
-    StockDataSource stockDataSource
+    StockDataSource stockDataSource = new StockFileReaderDataSource()
 
     def "deve Listar Movimentacao"() {
         when:
