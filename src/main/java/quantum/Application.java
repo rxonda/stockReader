@@ -7,6 +7,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import quantum.dao.StockDataSource;
 import quantum.dao.StockFileReaderDataSource;
+import quantum.services.StockReaderService;
+import quantum.services.StockReaderServiceImpl;
 import reactor.ipc.netty.http.server.HttpServer;
 
 import java.io.IOException;
@@ -33,16 +35,17 @@ public class Application {
 
     public RouterFunction<ServerResponse> routingFunction() {
         StockDataSource repository = new StockFileReaderDataSource();
-        StockHandler handler = new StockHandler(repository);
+        StockReaderService service = new StockReaderServiceImpl();
+        StockHandler handler = new StockHandler(repository, service);
 
         return nest(path("/nonblocking"),
                 nest(accept(APPLICATION_JSON),
-                        route(method(HttpMethod.GET), handler::list)
-                                .andRoute(GET("/fechamentoMaximo"), handler::listFechamentoMaximo)
+                        route(GET("/fechamentoMaximo"), handler::listFechamentoMaximo)
                                 .andRoute(GET("/fechamentoMinimo"), handler::listFechamentoMinimo)
                                 .andRoute(GET("/retornoMaximo"), handler::listRetornoMaximo)
                                 .andRoute(GET("/retornoMinimo"), handler::listRetornoMinimo)
                                 .andRoute(GET("/volumeMedio"), handler::listVolumeMedio)
+                                .andRoute(method(HttpMethod.GET), handler::list)
                 )
         );
     }

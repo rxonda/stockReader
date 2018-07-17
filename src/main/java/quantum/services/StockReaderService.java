@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * Created by xonda on 12/03/2015.
  */
-interface StockReaderService {
+public interface StockReaderService {
     Function<Stream<Movimento>,Stream<Movimento>> fechamentosMaximo();
 
     Function<Stream<Movimento>,Stream<Movimento>> fechamentosMinimo();

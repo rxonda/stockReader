@@ -43,19 +43,20 @@ public class StockReaderServiceImpl implements StockReaderService {
 
     @Override
     public Function<Stream<Movimento>, Stream<Average>> volumesMedio() {
-        return null; //(Stream<Movimento> movimentoObservable) -> movimentoObservable
-//                    .filter(m -> m.getVolume() > 0L)
-//                    .collect(Collectors.groupingBy((Movimento m) -> m.getId())
-//                    .collect((k, g) -> {
-//                        g.inject(new Average(k)) { a, c -> a.add(c.volume) }
-//                    });
+        return (Stream<Movimento> stream) -> {
+            Map<String, List<Movimento>> mapa = stream.filter(m -> m.getVolume() > 0L)
+                    .collect(Collectors.groupingBy(Movimento::getId));
+            final Stream.Builder<Average> result = Stream.builder();
+            mapa.forEach((k,g) -> result.accept(new Average(k, g.stream().mapToLong(Movimento::getVolume).average().getAsDouble())));
+            return result.build();
+        };
     }
 
     private Function<Stream<Movimento>,Stream<Movimento>> getGroupByClose(final Comparator<Movimento> comparator) {
         return (Stream<Movimento> stream) -> {
             Map<String, List<Movimento>> mapa = stream.collect(Collectors.groupingBy(Movimento::getId));
             final Stream.Builder<Movimento> result = Stream.builder();
-            mapa.forEach((k,g) -> result.add(g.stream().max(comparator).get()));
+            mapa.forEach((k,g) -> result.accept(g.stream().max(comparator).get()));
             return result.build();
         };
     }
@@ -77,7 +78,7 @@ public class StockReaderServiceImpl implements StockReaderService {
                     .filter(r -> r.isValid())
                     .collect(Collectors.groupingBy(Retorno::getId));
             final Stream.Builder builder = Stream.builder();
-            mapa.forEach((k,g) -> builder.add(g.stream().max(comparator).get()));
+            mapa.forEach((k,g) -> builder.accept(g.stream().max(comparator).get()));
             return builder.build();
         };
     }
