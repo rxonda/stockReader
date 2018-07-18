@@ -1,61 +1,24 @@
 package quantum;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerResponse;
-import quantum.dao.StockDataSource;
-import quantum.dao.StockFileReaderDataSource;
-import quantum.services.StockReaderService;
-import quantum.services.StockReaderServiceImpl;
-import reactor.ipc.netty.http.server.HttpServer;
-
-import java.io.IOException;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
-import static org.springframework.web.reactive.function.server.RequestPredicates.method;
-import static org.springframework.web.reactive.function.server.RequestPredicates.path;
-import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-import static org.springframework.web.reactive.function.server.RouterFunctions.toHttpHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.Banner;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import quantum.config.WebConfig;
 
 public class Application {
-    private final static String HOST = "localhost";
-    private final static int PORT = 8080;
 
-    public static void main(String[] args) throws IOException {
-        Application application = new Application();
-        application.startReactorServer();
-        System.out.println("Press ENTER to exit.");
-        System.in.read();
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-    public RouterFunction<ServerResponse> routingFunction() {
-        StockDataSource repository = new StockFileReaderDataSource();
-        StockReaderService service = new StockReaderServiceImpl();
-        StockHandler handler = new StockHandler(repository, service);
+    public static void main(String[] args) {
+        LOGGER.info("Initializing server...");
 
-        return nest(path("/nonblocking"),
-                nest(accept(APPLICATION_JSON),
-                        route(GET("/fechamentoMaximo"), handler::listFechamentoMaximo)
-                                .andRoute(GET("/fechamentoMinimo"), handler::listFechamentoMinimo)
-                                .andRoute(GET("/retornoMaximo"), handler::listRetornoMaximo)
-                                .andRoute(GET("/retornoMinimo"), handler::listRetornoMinimo)
-                                .andRoute(GET("/volumeMedio"), handler::listVolumeMedio)
-                                .andRoute(method(HttpMethod.GET), handler::list)
-                )
-        );
-    }
-
-    public void startReactorServer() {
-        RouterFunction<ServerResponse> route = routingFunction();
-        HttpHandler httpHandler = toHttpHandler(route);
-
-        ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(httpHandler);
-        HttpServer server = HttpServer.create(HOST, PORT);
-        server.newHandler(adapter).block();
+        new SpringApplicationBuilder()
+                .sources(WebConfig.class)
+                .bannerMode(Banner.Mode.OFF)
+                .web(WebApplicationType.REACTIVE)
+                .build(args)
+                .run(args);
     }
 }

@@ -7,8 +7,6 @@ import quantum.domain.Movimento
 import quantum.domain.Retorno
 import spock.lang.Specification
 
-import java.util.stream.Stream
-
 import static quantum.TestUtils.assertMovimento
 import static quantum.TestUtils.assertRetorno
 import static quantum.TestUtils.assertVolumeMedio
@@ -25,7 +23,7 @@ class MovimentoReaderServiceSpec extends Specification {
 
     void "deve Listar Fechamentos Maximo"() {
         when:
-        Stream<Movimento> movimentos = stockReaderService.fechamentosMaximo().apply(stockDataSource.list())
+        Collection<Movimento> movimentos = stockReaderService.fechamentosMaximo(stockDataSource.list())
 
         then:
         Iterator<Movimento> it = movimentos.iterator()
@@ -36,7 +34,7 @@ class MovimentoReaderServiceSpec extends Specification {
 
     void "deve Listar Fechamentos Minimo"() {
         when:
-        Stream<Movimento> movimentos = stockReaderService.fechamentosMinimo().apply(stockDataSource.list())
+        Collection<Movimento> movimentos = stockReaderService.fechamentosMinimo(stockDataSource.list())
         
         then:
         Iterator<Movimento> it = movimentos.iterator()
@@ -47,10 +45,10 @@ class MovimentoReaderServiceSpec extends Specification {
 
     void "deve Listar Retorno Maximo"() {
         when:
-        Stream<Retorno> retornos = stockReaderService.retornosMaximo().apply(stockDataSource.list())
+        Collection<Retorno> retornos = stockReaderService.retornosMaximo(stockDataSource.list())
         
         then:
-        Iterator<Optional<Retorno>> it = retornos.iterator()
+        Iterator<Retorno> it = retornos.iterator()
         assertRetorno(it.next(), "PETR4", data("2013-01-03"), new BigDecimal("20.40"), 30552600L)
         assertRetorno(it.next(), "OGXP3", data("2013-01-02"), new BigDecimal("4.76"), 45904000L)
         assertRetorno(it.next(), "VALE5", data("2013-01-02"), new BigDecimal("42.60"), 18515700L)
@@ -58,10 +56,10 @@ class MovimentoReaderServiceSpec extends Specification {
 
     void "deve Listar Retorno Minimo"() {
         when:
-        Stream<Retorno> retornos = stockReaderService.retornosMinimo().apply(stockDataSource.list())
+        Collection<Retorno> retornos = stockReaderService.retornosMinimo(stockDataSource.list())
         
         then:
-        Iterator<Optional<Retorno>> it = retornos.iterator();
+        Iterator<Retorno> it = retornos.iterator()
         assertRetorno(it.next(), "PETR4", data("2013-01-07"), new BigDecimal("20.08"), 28069600L)
         assertRetorno(it.next(), "OGXP3", data("2013-01-03"), new BigDecimal("4.90"), 38143400L)
         assertRetorno(it.next(), "VALE5", data("2013-01-04"), new BigDecimal("41.36"), 26351900L)
@@ -69,7 +67,7 @@ class MovimentoReaderServiceSpec extends Specification {
 
     void "deve Listar Volume Medio Cada Acao"() {
         when:
-        Stream<Average> movimentos = stockReaderService.volumesMedio().apply(stockDataSource.list())
+        Collection<Average> movimentos = stockReaderService.volumesMedio(stockDataSource.list())
         
         then:
         Iterator<Average> it = movimentos.iterator()
