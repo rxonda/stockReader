@@ -34,18 +34,26 @@ public class StockFileReaderDataSource implements StockDataSource {
 
     @Override
     public Stream<Movimento> list(Map<String, Object> params) {
-        try {
-            Stream<String> s = source().lines().skip(1L);
-            if(params.containsKey("start")) {
-                s = s.skip((Integer) params.get("start"));
+        return new Stream.Builder<Movimento>() {
+            @Override
+            public void accept(Movimento o) {}
+
+            @Override
+            public Stream<Movimento> build() {
+                try {
+                    Stream<String> s = source().lines().skip(1L);
+                    if(params.containsKey("start")) {
+                        s = s.skip((Integer) params.get("start"));
+                    }
+                    if(params.containsKey("offset")) {
+                        s = s.limit((Integer) params.get("offset"));
+                    }
+                    return s.map(transformer());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            if(params.containsKey("offset")) {
-                s = s.limit((Integer) params.get("offset"));
-            }
-            return s.map(transformer());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        }.build();
     }
 
     private Function<String, Movimento> transformer() {
