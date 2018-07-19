@@ -1,5 +1,7 @@
 package quantum.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import quantum.domain.Movimento;
@@ -22,6 +24,8 @@ import java.util.stream.Stream;
  * Created by xonda on 15/03/2015.
  */
 public class StockFileReaderDataSource implements StockDataSource {
+
+    private static final Logger log = LoggerFactory.getLogger(StockFileReaderDataSource.class);
 
     @Override
     public Stream<Movimento> list() {
@@ -52,6 +56,9 @@ public class StockFileReaderDataSource implements StockDataSource {
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tokenizer.nextToken());
                 BigDecimal close = new BigDecimal(tokenizer.nextToken());
                 Long volume = Long.parseLong(tokenizer.nextToken());
+
+               if(log.isTraceEnabled()) log.trace("Creating Movimento");
+
                 return new Movimento(id, date, close, volume);
             } catch (ParseException e) {
                 throw new RuntimeException(e);

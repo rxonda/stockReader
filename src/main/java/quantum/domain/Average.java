@@ -19,4 +19,29 @@ public class Average {
     public Double getVolume() {
         return this.volume;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(!(obj instanceof Average)) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+
+        Average other = (Average)obj;
+
+        return (this.id.equals(other.id) && (this.volume - other.volume < 0.00000001));
+    }
+
+    @Override
+    public String toString() {
+        return "Average{" +
+                "id='" + id + '\'' +
+                ", volume=" + volume +
+                '}';
+    }
 }

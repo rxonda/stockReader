@@ -41,4 +41,34 @@ public class Movimento {
     public Long getVolume() {
         return volume;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(!(obj instanceof Movimento)) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        Movimento other = (Movimento)obj;
+        return (
+                this.id.equals(other.id)
+                        && this.date.equals(other.date)
+                        && this.close.equals(other.close)
+                        && this.volume.equals(other.volume)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return "Movimento{" +
+                "id='" + id + '\'' +
+                ", date=" + date +
+                ", close=" + close +
+                ", volume=" + volume +
+                '}';
+    }
 }

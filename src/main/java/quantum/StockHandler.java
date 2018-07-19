@@ -29,27 +29,31 @@ public class StockHandler {
     }
 
     public Mono<ServerResponse> listFechamentoMaximo(ServerRequest request) {
-        Flux<Movimento> movimento = Flux.defer(() -> Flux.fromIterable(service.fechamentosMaximo(dataSource.list()))).subscribeOn(scheduler);
+        Flux<Movimento> movimento = deferToScheduler(service.fechamentosMaximo(dataSource.list()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(movimento, Movimento.class);
     }
 
     public Mono<ServerResponse> listFechamentoMinimo(ServerRequest request) {
-        Flux<Movimento> movimento = Flux.defer(() -> Flux.fromIterable(service.fechamentosMinimo(dataSource.list()))).subscribeOn(scheduler);
+        Flux<Movimento> movimento = deferToScheduler(service.fechamentosMinimo(dataSource.list()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(movimento, Movimento.class);
     }
 
     public Mono<ServerResponse> listRetornoMaximo(ServerRequest request) {
-        Flux<Retorno> retorno = Flux.defer(() -> Flux.fromIterable(service.retornosMaximo(dataSource.list())));
+        Flux<Retorno> retorno = deferToScheduler(service.retornosMaximo(dataSource.list()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(retorno, Retorno.class);
     }
 
     public Mono<ServerResponse> listRetornoMinimo(ServerRequest request) {
-        Flux<Retorno> retorno = Flux.defer(() -> Flux.fromIterable(service.retornosMinimo(dataSource.list())));
+        Flux<Retorno> retorno = deferToScheduler(service.retornosMinimo(dataSource.list()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(retorno, Retorno.class);
     }
 
     public Mono<ServerResponse> listVolumeMedio(ServerRequest request) {
-        Flux<Average> average = Flux.defer(() -> Flux.fromIterable(service.volumesMedio(dataSource.list())));
+        Flux<Average> average = deferToScheduler(service.volumesMedio(dataSource.list()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(average, Average.class);
+    }
+
+    private <T> Flux<T> deferToScheduler(Iterable<T> iterable) {
+        return Flux.defer(() -> Flux.fromIterable(iterable)).subscribeOn(scheduler);
     }
 }
