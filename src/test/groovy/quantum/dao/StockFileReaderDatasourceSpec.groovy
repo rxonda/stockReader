@@ -36,7 +36,7 @@ class StockFileReaderDatasourceSpec extends Specification {
 
     def "should list first page with 5 lines"() {
         setup:
-        Flux<Movimento> movimentos = Flux.fromStream(stockDataSource.list([start: 0, offset: 5]))
+        Flux<Movimento> movimentos = Flux.fromStream(stockDataSource.list(0,5))
 
         Consumer<Movimento> movimentoConsumer = Mock(Consumer.class) {
             1 * accept(new Movimento("OGXP3", data("2013-01-01"), new BigDecimal("4.38"), 0L))
@@ -52,7 +52,7 @@ class StockFileReaderDatasourceSpec extends Specification {
 
     def "should list second page with 3 lines"() {
         setup:
-        Flux<Movimento> movimentos = Flux.fromStream(stockDataSource.list([start: 5, offset: 3]))
+        Flux<Movimento> movimentos = Flux.fromStream(stockDataSource.list(5,3))
 
         Consumer<Movimento> movimentoConsumer = Mock(Consumer.class) {
             1 * accept(new Movimento("PETR4", data("2013-01-04"), new BigDecimal("20.43"), 36141000L))

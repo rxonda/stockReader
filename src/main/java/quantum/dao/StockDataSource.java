@@ -10,5 +10,5 @@ import java.util.stream.Stream;
  */
 public interface StockDataSource {
     Stream<Movimento> list();
-    Stream<Movimento> list(Map<String,Object> params);
+    Stream<Movimento> list(Integer start, Integer offset);
 }

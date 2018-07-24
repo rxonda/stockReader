@@ -12,6 +12,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StockHandler {
     private final StockDataSource dataSource;
     private final StockReaderService service;
@@ -24,7 +27,8 @@ public class StockHandler {
     }
 
     public Mono<ServerResponse> list(ServerRequest request) {
-        Flux<Movimento> movimento = Flux.fromStream(dataSource.list()).subscribeOn(scheduler);
+        Map<String, Integer> pagination = pagination(request);
+        Flux<Movimento> movimento = Flux.fromStream(dataSource.list(pagination.get("start"), pagination.get("offset"))).subscribeOn(scheduler);
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(movimento, Movimento.class);
     }
 
@@ -55,5 +59,12 @@ public class StockHandler {
 
     private <T> Flux<T> deferToScheduler(Iterable<T> iterable) {
         return Flux.defer(() -> Flux.fromIterable(iterable)).subscribeOn(scheduler);
+    }
+
+    private Map<String, Integer> pagination(ServerRequest request) {
+        Map<String, Integer> result = new HashMap<>();
+        request.queryParam("start").ifPresent(v -> result.put("start", Integer.valueOf(v)));
+        request.queryParam("offset").ifPresent(v -> result.put("offset", Integer.valueOf(v)));
+        return result;
     }
 }

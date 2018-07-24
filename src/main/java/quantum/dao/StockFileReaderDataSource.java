@@ -29,11 +29,11 @@ public class StockFileReaderDataSource implements StockDataSource {
 
     @Override
     public Stream<Movimento> list() {
-        return list(new HashMap());
+        return list(0,0);
     }
 
     @Override
-    public Stream<Movimento> list(Map<String, Object> params) {
+    public Stream<Movimento> list(Integer start, Integer offset) {
         return new Stream.Builder<Movimento>() {
             @Override
             public void accept(Movimento o) {}
@@ -42,11 +42,11 @@ public class StockFileReaderDataSource implements StockDataSource {
             public Stream<Movimento> build() {
                 try {
                     Stream<String> s = source().lines().skip(1L);
-                    if(params.containsKey("start")) {
-                        s = s.skip((Integer) params.get("start"));
+                    if(start > 0) {
+                        s = s.skip(start);
                     }
-                    if(params.containsKey("offset")) {
-                        s = s.limit((Integer) params.get("offset"));
+                    if(offset > 0) {
+                        s = s.limit(offset);
                     }
                     return s.map(transformer());
                 } catch (IOException e) {
