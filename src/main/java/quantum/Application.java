@@ -12,7 +12,7 @@ public class Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
-        LOGGER.info("Initializing server...");
+        LOGGER.info("Initializing app...");
 
         new SpringApplicationBuilder()
                 .sources(WebConfig.class)
