@@ -32,24 +32,14 @@ targetCompatibility = 1.8
 
 dependencies {
 
-    compile 'org.codehaus.groovy:groovy-all:2.4.15'
-
     compile 'org.springframework.boot:spring-boot-starter-webflux'
-
-    compile 'io.reactivex:rxjava:1.1.9'
 
     compile 'org.slf4j:slf4j-api:1.7.+'
 
     compile 'ch.qos.logback:logback-classic:1.2.+'
 
-//    testCompile 'org.springframework.boot:spring-boot-starter-test'
-
-//    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
-
-//    testCompile "org.codehaus.groovy:groovy-test:2.4.15"
+    compile 'org.codehaus.groovy:groovy:2.4.15'
 
     testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
-
-
-    testCompile 'junit:junit:4.12'
+    
 }
